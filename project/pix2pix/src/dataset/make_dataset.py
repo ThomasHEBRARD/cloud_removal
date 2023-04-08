@@ -66,4 +66,4 @@ class DataLoader:
             normalized_cloud_free_images, 1024, 1024, 1024, 3
         )
 
-        return cropped_images_A[:10,:,:,:], cropped_images_B[:10,:,:,:]
+        return cropped_images_A, cropped_images_B
