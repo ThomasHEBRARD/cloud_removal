@@ -203,7 +203,7 @@ class Pix2Pix:
                     )
                 )
 
-                if epoch == 0 and i == 9:
+                if (epoch + 1) % (epochs // 10) == 0:
                     self.save_model(epoch, d_loss[0], g_loss[0], 100 * d_loss[1])
                 i += 1
 
