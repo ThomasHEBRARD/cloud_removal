@@ -16,9 +16,8 @@ import sys
 
 sys.path.append(".")
 sys.path.append("..")
-sys.path.append("...")
 
-from src.data.make_dataset import DataLoader
+from src.dataset.make_dataset import DataLoader
 
 
 class Pix2Pix:

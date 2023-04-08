@@ -74,5 +74,5 @@ target/
 
 
 
-data/
-models/
+data/*
+models/*
