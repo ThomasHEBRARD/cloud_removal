@@ -1,0 +1,8 @@
+{
+    "project_name": "A deep learning approch for cloud removal from satellite images using multispectral Sentinel Data: Sentinel-1 Radar and Sentinel-2 optical Imagery",
+    "repo_name": "thomas_hebrard_thesis",
+    "author_name": "Thomas, Cyril, Martin HEBRARD",
+    "description": "Thomas HEBRARD thesis project (DTU s212816 - DHI).",
+    "year": "2023",
+    "open_source_license": ["Not open source"]
+}
