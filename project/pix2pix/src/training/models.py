@@ -215,29 +215,29 @@ class Pix2Pix:
 
         gen_image = self.generator.predict(self.dataset[1])
 
-        fig, axes = plt.subplots(3, 3, figsize=(16, 8)) 
+        fig, axes = plt.subplots(3, 3, figsize=(16, 8))
 
-        axes[0, 0].imshow(self.dataset[1][0][:,:,2:])
-        axes[0, 0].axis('off')
-        axes[0, 0].set_title('S2 RGB cloudy input')
+        axes[0, 0].imshow(self.dataset[1][0][:, :, 2:])
+        axes[0, 0].axis("off")
+        axes[0, 0].set_title("S2 RGB cloudy input")
 
-        axes[0, 1].imshow(self.dataset[1][0][:,:,0])
-        axes[0, 1].axis('off')
-        axes[0, 1].set_title('S1 VH input')
+        axes[0, 1].imshow(self.dataset[1][0][:, :, 0])
+        axes[0, 1].axis("off")
+        axes[0, 1].set_title("S1 VH input")
 
-        axes[0, 2].imshow(self.dataset[1][0][:,:,1])
-        axes[0, 2].axis('off')
-        axes[0, 2].set_title('S1 VV input')
+        axes[0, 2].imshow(self.dataset[1][0][:, :, 1])
+        axes[0, 2].axis("off")
+        axes[0, 2].set_title("S1 VV input")
 
         # Plot output_image in the second block
         axes[1, 1].imshow(gen_image[0])
-        axes[1, 1].axis('off')
-        axes[1, 1].set_title('Generated Output')
+        axes[1, 1].axis("off")
+        axes[1, 1].set_title("Generated Output")
 
         # Plot truth_image in the third block
         axes[2, 1].imshow(self.dataset[0][0])
-        axes[2, 1].axis('off')
-        axes[2, 1].set_title('Ground Truth')
+        axes[2, 1].axis("off")
+        axes[2, 1].set_title("Ground Truth")
 
         # Remove unused subplots
         axes[1, 0].remove()
@@ -247,6 +247,8 @@ class Pix2Pix:
 
         plt.subplots_adjust(wspace=0.2, hspace=0.3)
 
-        fig.suptitle(f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {g_loss}, d_loss: {d_loss}, accuracy: {accuracy}%")
+        fig.suptitle(
+            f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {g_loss}, d_loss: {d_loss}, accuracy: {accuracy}%"
+        )
         fig.savefig(f"models/model_epoch_{epoch}/result.png")
         plt.close()

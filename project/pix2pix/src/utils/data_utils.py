@@ -34,6 +34,7 @@ def create_crops(image, crop_height, crop_width, stride, num_bands):
 
     return np.array(cropped_images)
 
+
 def choice_im(image_shape, crop_height, crop_width, stride):
     x = random.choice([xx for xx in range(0, image_shape[1] - crop_width + 1, stride)])
     y = random.choice([xx for xx in range(0, image_shape[0] - crop_height + 1, stride)])

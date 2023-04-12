@@ -2,6 +2,7 @@ import numpy as np
 
 from src.utils.data_utils import imread, normalize_images, create_crops, choice_im
 
+
 class DataLoader:
     def generator_data(self):
         cloud_free_vrts = ["data/vrt/s2/translate/S2_32VNH_20200601.vrt"]
@@ -31,7 +32,9 @@ class DataLoader:
 
         x, y = choice_im(input_image.shape, 1024, 1024, 1024)
         cropped_B = np.array([input_image[y : y + 1024, x : x + 1024, :]])
-        cropped_A = np.array([normalized_cloud_free_images[y : y + 1024, x : x + 1024, :]])
+        cropped_A = np.array(
+            [normalized_cloud_free_images[y : y + 1024, x : x + 1024, :]]
+        )
         print(cropped_A.shape)
         print(cropped_B.shape)
         del input_image
@@ -43,8 +46,9 @@ class DataLoader:
 
         return cropped_A, cropped_B
 
-
-    def load_data(self, ):
+    def load_data(
+        self,
+    ):
         cloud_free_vrts = ["data/vrt/s2/translate/S2_32VNH_20200601.vrt"]
         cloudy_vrts = ["data/vrt/s2/translate/S2_32VNH_20200611.vrt"]
         s1_vrts = ["data/vrt/s1/S1_32VNH_20200609_D_139.vrt"]
