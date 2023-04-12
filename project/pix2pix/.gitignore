@@ -72,3 +72,4 @@ target/
 
 model-old/
 data/*
+logs/*

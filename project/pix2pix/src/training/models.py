@@ -21,7 +21,7 @@ from src.dataset.make_dataset import DataLoader
 
 
 class Pix2Pix:
-    def __init__(self, lr=0.0002, gf=64, df=64):
+    def __init__(self, lr=0.0002, gf=64, df=64, train=False):
         # Input shape
         self.lr = lr
         self.gf = gf
@@ -32,7 +32,10 @@ class Pix2Pix:
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
 
         # Configure data loader
-        self.dataset = DataLoader().load_data()
+        if train:
+            self.dataset = DataLoader().load_data()
+        else:
+            self.dataset = ([], [])
 
         # Calculate output shape of D (PatchGAN)
         patch = int(self.img_rows / 2**4)
@@ -161,7 +164,7 @@ class Pix2Pix:
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
 
-        for epoch in range(epochs):
+        for epoch in [0]:
             i = 0
             for imgs_A, imgs_B in zip(self.dataset[0], self.dataset[1]):
                 imgs_B = np.array([imgs_B])
@@ -203,9 +206,10 @@ class Pix2Pix:
                     )
                 )
 
-                if (epoch + 1) % (epochs // 10) == 0:
-                    self.save_model(epoch, d_loss[0], g_loss[0], 100 * d_loss[1])
-                i += 1
+            if epoch == 0:
+                self.save_model(epoch, d_loss[0], g_loss[0], 100 * d_loss[1])
+            i += 1
+            break
 
     def save_model(self, epoch, d_loss, g_loss, accuracy):
         self.generator.save(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
