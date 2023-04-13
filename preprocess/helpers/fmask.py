@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # 4 => cloud
 
 
-def display_fmask(tif_path, show=False):
+def display_fmask(tif_path, show=False, save=""):
     dataset = gdal.Open(tif_path)
 
     band = dataset.GetRasterBand(1)
@@ -20,5 +20,8 @@ def display_fmask(tif_path, show=False):
         plt.imshow(image_data, cmap="gray", vmin=0, vmax=4)
         plt.title("Single-Band TIF Image")
         plt.show()
+
+    if len(save):
+        plt.savefig(save)
 
     return image_data
