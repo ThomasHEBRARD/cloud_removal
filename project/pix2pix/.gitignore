@@ -69,5 +69,4 @@ target/
 # IPython NB Checkpoints
 .ipynb_checkpoints/
 
-data/*
 logs/*
