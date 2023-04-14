@@ -26,9 +26,9 @@ class DataLoader:
             s2_cloudy_B02 = gdal.Open(self.dataset_train[k]["s2_cloudy_B02"]).ReadAsArray()
             s2_cloudy_B03 = gdal.Open(self.dataset_train[k]["s2_cloudy_B03"]).ReadAsArray()
             s2_cloudy_B04 = gdal.Open(self.dataset_train[k]["s2_cloudy_B04"]).ReadAsArray()
-            s2_cloudfree_B02 = gdal.Open(self.dataset_train[k]["s2_cloudfree_B02"]).ReadAsArray()
-            s2_cloudfree_B03 = gdal.Open(self.dataset_train[k]["s2_cloudfree_B03"]).ReadAsArray()
-            s2_cloudfree_B04 = gdal.Open(self.dataset_train[k]["s2_cloudfree_B04"]).ReadAsArray()
+            s2_cloudfree_B02 = gdal.Open(self.dataset_train[k]["s2_cloud_free_B02"]).ReadAsArray()
+            s2_cloudfree_B03 = gdal.Open(self.dataset_train[k]["s2_cloud_free_B03"]).ReadAsArray()
+            s2_cloudfree_B04 = gdal.Open(self.dataset_train[k]["s2_cloud_free_B04"]).ReadAsArray()
 
             input = np.stack((s1_hv, s1_vv, s2_cloudy_B04, s2_cloudy_B03, s2_cloudy_B02), axis=-1)
             ground_truth = np.stack((s2_cloudfree_B04, s2_cloudfree_B03, s2_cloudfree_B02), axis=-1)
