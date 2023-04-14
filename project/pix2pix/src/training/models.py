@@ -26,14 +26,14 @@ class Pix2Pix:
         self.lr = lr
         self.gf = gf
         self.df = df
-        self.img_rows = 1024
-        self.img_cols = 1024
+        self.img_rows = 256
+        self.img_cols = 256
         self.channels = 5
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
 
         # Configure data loader
         if train:
-            self.dataset = DataLoader().load_data()
+            self.datal_loader = DataLoader()
         else:
             self.dataset = ([], [])
 
@@ -157,19 +157,15 @@ class Pix2Pix:
 
         return Model([img_A, img_B], validity)
 
-    def train(self, epochs, batch_size=10):
+    def train(self, epochs, batch_size=1):
         start_time = datetime.datetime.now()
 
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
 
-        for epoch in [0]:
-            i = 0
-            for imgs_A, imgs_B in zip(self.dataset[0], self.dataset[1]):
-                imgs_B = np.array([imgs_B])
-                imgs_A = np.array([imgs_A])
-
+        for epoch in epochs:
+            for batch_i, (imgs_A, imgs_B) in enumerate(self.datal_loader.load_batch(batch_size)):
                 # ---------------------
                 #  Train Discriminator
                 # ---------------------
@@ -196,19 +192,17 @@ class Pix2Pix:
                     % (
                         epoch,
                         epochs,
-                        i,
-                        i,
+                        batch_i,
+                        self.datal_loader.n_batches,
                         d_loss[0],
                         100 * d_loss[1],
                         g_loss[0],
                         elapsed_time,
                     )
                 )
-                i += 1
 
-                if epoch == 0 and i == 10:
+                if epoch == 0:
                     self.save_model(epoch, d_loss[0], g_loss[0], 100 * d_loss[1])
-                    break
 
     def save_model(self, epoch, d_loss, g_loss, accuracy):
         self.generator.save(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")

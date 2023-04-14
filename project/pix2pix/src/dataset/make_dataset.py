@@ -1,99 +1,48 @@
 import json
 import random
+from osgeo import gdal
 import numpy as np
 
 from src.utils.data_utils import imread, normalize_images, create_crops, choice_im
 
 
 class DataLoader:
-    def generator_data(self):
-        cloud_free_vrts = ["data/vrt/s2/translate/S2_32VNH_20200601.vrt"]
-        cloudy_vrts = ["data/vrt/s2/translate/S2_32VNH_20200611.vrt"]
-        s1_vrts = ["data/vrt/s1/S1_32VNH_20200609_D_139.vrt"]
-
-        cloudy_images = [imread(file_path) for file_path in cloudy_vrts]
-        cloud_free_images = [imread(file_path) for file_path in cloud_free_vrts]
-        s1 = [imread(file_path) for file_path in s1_vrts]
-
-        cloudy_images = cloudy_images[0]
-        cloud_free_images = cloud_free_images[0]
-        s1 = s1[0]
-        s1 = s1[:, :, :2]
-
-        normalized_cloudy_images = [
-            normalize_images(cloudy_image) for cloudy_image in cloudy_images
-        ]
-        normalized_cloud_free_images = np.array(
-            [
-                normalize_images(cloud_free_image)
-                for cloud_free_image in cloud_free_images
-            ]
-        )
-
-        input_image = np.concatenate((s1, normalized_cloudy_images), axis=-1)
-
-        x, y = choice_im(input_image.shape, 1024, 1024, 1024)
-        cropped_B = np.array([input_image[y : y + 1024, x : x + 1024, :]])
-        cropped_A = np.array(
-            [normalized_cloud_free_images[y : y + 1024, x : x + 1024, :]]
-        )
-        print(cropped_A.shape)
-        print(cropped_B.shape)
-        del input_image
-        del normalized_cloud_free_images
-        del normalized_cloudy_images
-        del cloudy_images
-        del s1
-        del cloud_free_images
-
-        return cropped_A, cropped_B
-
-    def load_data(
-        self,
-    ):
-        cloud_free_vrts = ["data/vrt/s2/translate/S2_32VNH_20200601.vrt"]
-        cloudy_vrts = ["data/vrt/s2/translate/S2_32VNH_20200611.vrt"]
-        s1_vrts = ["data/vrt/s1/S1_32VNH_20200609_D_139.vrt"]
-
-        cloudy_images = [imread(file_path) for file_path in cloudy_vrts]
-        cloud_free_images = [imread(file_path) for file_path in cloud_free_vrts]
-        s1 = [imread(file_path) for file_path in s1_vrts]
-
-        cloudy_images = cloudy_images[0]
-        cloud_free_images = cloud_free_images[0]
-        s1 = s1[0]
-        s1 = s1[:, :, :2]
-
-        normalized_cloudy_images = [
-            normalize_images(cloudy_image) for cloudy_image in cloudy_images
-        ]
-        normalized_cloud_free_images = np.array(
-            [
-                normalize_images(cloud_free_image)
-                for cloud_free_image in cloud_free_images
-            ]
-        )
-
-        input_image = np.concatenate((s1, normalized_cloudy_images), axis=-1)
-
-        cropped_images_B = create_crops(input_image, 1024, 1024, 1024, 5)
-        cropped_images_A = create_crops(
-            normalized_cloud_free_images, 1024, 1024, 1024, 3
-        )
-
-        del input_image
-        del normalized_cloud_free_images
-        del normalized_cloudy_images
-        del cloudy_images
-        del s1
-        del cloud_free_images
-
-        return cropped_images_A, cropped_images_B
+    def __init__(self):
+        with open("dataset_train.json", "r") as f:
+            self.dataset_train = json.load(f)
+        with open("dataset_test.json", "r") as f:
+            self.dataset_test = json.load(f)
+            
+        self.dataset_train_keys = self.dataset_train.keys()
 
     def load_batch(self, batch_size):
-        with open("dataset.json", "r") as f:
-            dataset = json.load(f)
-        
-        data = random.sample(list(dataset.keys()), batch_size)
+        batched_data = []
+        data_keys = random.sample(self.dataset_train_keys, batch_size)
+        self.n_batches = int(len(data_keys)/batch_size)
 
-        # contruct data, channels etc.
+        for k in data_keys:
+            s1_hv = gdal.Open(self.dataset_train[k]["s1_hv"]).ReadAsArray()
+            s1_vv = gdal.Open(self.dataset_train[k]["s1_vv"]).ReadAsArray()
+            s2_cloudy_B02 = gdal.Open(self.dataset_train[k]["s2_cloudy_B02"]).ReadAsArray()
+            s2_cloudy_B03 = gdal.Open(self.dataset_train[k]["s2_cloudy_B03"]).ReadAsArray()
+            s2_cloudy_B04 = gdal.Open(self.dataset_train[k]["s2_cloudy_B04"]).ReadAsArray()
+            s2_cloudfree_B02 = gdal.Open(self.dataset_train[k]["s2_cloudfree_B02"]).ReadAsArray()
+            s2_cloudfree_B03 = gdal.Open(self.dataset_train[k]["s2_cloudfree_B03"]).ReadAsArray()
+            s2_cloudfree_B04 = gdal.Open(self.dataset_train[k]["s2_cloudfree_B04"]).ReadAsArray()
+
+            input = np.stack((s1_hv, s1_vv, s2_cloudy_B04, s2_cloudy_B03, s2_cloudy_B02), axis=-1)
+            ground_truth = np.stack((s2_cloudfree_B04, s2_cloudfree_B03, s2_cloudfree_B02), axis=-1)
+            batched_data.append((ground_truth, input))
+
+        del s1_hv
+        del s1_vv
+        del s2_cloudy_B02
+        del s2_cloudy_B03
+        del s2_cloudy_B04
+        del s2_cloudfree_B02
+        del s2_cloudfree_B03
+        del s2_cloudfree_B04
+        del input
+        del ground_truth
+
+        return batched_data
