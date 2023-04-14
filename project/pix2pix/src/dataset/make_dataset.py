@@ -1,3 +1,5 @@
+import json
+import random
 import numpy as np
 
 from src.utils.data_utils import imread, normalize_images, create_crops, choice_im
@@ -87,3 +89,11 @@ class DataLoader:
         del cloud_free_images
 
         return cropped_images_A, cropped_images_B
+
+    def load_batch(self, batch_size):
+        with open("dataset.json", "r") as f:
+            dataset = json.load(f)
+        
+        data = random.sample(list(dataset.keys()), batch_size)
+
+        # contruct data, channels etc.

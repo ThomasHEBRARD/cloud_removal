@@ -157,7 +157,7 @@ class Pix2Pix:
 
         return Model([img_A, img_B], validity)
 
-    def train(self, epochs, batch_size=1):
+    def train(self, epochs, batch_size=10):
         start_time = datetime.datetime.now()
 
         # Adversarial loss ground truths
