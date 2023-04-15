@@ -165,10 +165,10 @@ class Pix2Pix:
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
-        n_batches_per_epoch = 10
+        n_batches_per_epoch = 5
 
         for epoch in range(epochs):
-            for batch_i in range(n_batches_per_epoch):
+            for batch_i in range(1, n_batches_per_epoch + 1):
                 imgs_A, imgs_B = zip(*self.data_loader.load_batch(batch_size))
                 imgs_B = np.array(imgs_B)
                 imgs_A = np.array(imgs_A)
@@ -213,54 +213,59 @@ class Pix2Pix:
         if save:
             self.generator.save(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
-        dataset = self.data_loader.load_batch(is_testing=True)[0]
-        input = np.array([dataset[1]])
+        BATCH_SIZE = 3
 
-        s1_hv = dataset[1][:,:,0]
-        s1_vv = dataset[1][:,:,1]
+        fig, axes = plt.subplots(BATCH_SIZE, 5, figsize=(20, 12))
 
-        s2_cloudy = dataset[1][:,:,2:]/2000
-        s2_cloud_free = dataset[0]/2000
+        dA, dB = zip(*self.data_loader.load_batch(batch_size=BATCH_SIZE, is_testing=True))
+        dB = np.array(dB)
+        dA = np.array(dA)
+        
+        input = dB
+
+        s1_hv = dB[:,:,:,0]
+        s1_vv = dB[:,:,:,1]
 
         gen_image = self.generator.predict(input)
+        reverted_generated_output = (gen_image + 1) / 2
+        reverted_generated_output = (reverted_generated_output * 255).astype(np.uint8)
 
-        fig, axes = plt.subplots(3, 3, figsize=(16, 8))
+        s2_cloudy = dB[:,:,:,2:]
+        reverted_s2_cloudy = (s2_cloudy + 1) / 2
+        reverted_s2_cloudy = (reverted_s2_cloudy * 255).astype(np.uint8)
 
-        axes[0, 0].imshow(s2_cloudy)
-        axes[0, 0].axis("off")
-        axes[0, 0].set_title("S2 RGB cloudy input")
+        s2_cloud_free = dA
+        reverted_s2_cloud_free = (s2_cloud_free + 1) / 2
+        reverted_s2_cloud_free = (reverted_s2_cloud_free * 255).astype(np.uint8)
 
-        axes[0, 1].imshow(s1_hv)
-        axes[0, 1].axis("off")
-        axes[0, 1].set_title("S1 VH input")
+        for i in range(BATCH_SIZE):
+            axes[i, 0].imshow(reverted_s2_cloudy[i])
+            axes[i, 0].axis("off")
+            axes[i, 0].set_title("S2 RGB cloudy input")
 
-        axes[0, 2].imshow(s1_vv)
-        axes[0, 2].axis("off")
-        axes[0, 2].set_title("S1 VV input")
+            axes[i, 1].imshow(s1_hv[i])
+            axes[i, 1].axis("off")
+            axes[i, 1].set_title("S1 VH input")
 
-        # Plot output_image in the second block
-        axes[1, 1].imshow(gen_image[0])
-        axes[1, 1].axis("off")
-        axes[1, 1].set_title("Generated Output")
+            axes[i, 2].imshow(s1_vv[i])
+            axes[i, 2].axis("off")
+            axes[i, 2].set_title("S1 VV input")
+            # Ploidx output_image in the second block
+            axes[i, 3].imshow(gen_image[i])
+            axes[i, 3].axis("off")
+            axes[i, 3].set_title("Generated Output")
+            # Ploidx truth_image in the third block
+            axes[i, 4].imshow(reverted_s2_cloud_free[i])
+            axes[i, 4].axis("off")
+            axes[i, 4].set_title("Ground Truth")
 
-        # Plot truth_image in the third block
-        axes[2, 1].imshow(s2_cloud_free)
-        axes[2, 1].axis("off")
-        axes[2, 1].set_title("Ground Truth")
+            plt.subplots_adjust(wspace=0.1, hspace=0.1)
 
-        # Remove unused subplots
-        axes[1, 0].remove()
-        axes[1, 2].remove()
-        axes[2, 0].remove()
-        axes[2, 2].remove()
-
-        plt.subplots_adjust(wspace=0.2, hspace=0.3)
-
-        fig.suptitle(
-            f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {g_loss}, d_loss: {d_loss}, accuracy: {accuracy}%"
-        )
-        if save:
-            fig.savefig(f"models/model_epoch_{epoch}/result.png")
-        else:
-            fig.savefig(f"vis/result_epoch_{epoch}.png")
-        plt.close()
+            fig.suptitle(
+                f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {round(g_loss, 2)}, d_loss: {round(d_loss, 2)}, accuracy: {round(accuracy, 2)}%"
+            )
+            if save:
+                fig.savefig(f"models/model_epoch_{epoch}/result.png")
+            else:
+                fig.savefig(f"vis/result_epoch_{epoch}.png")
+            plt.close()

@@ -39,8 +39,20 @@ class DataLoader:
             s2_cloudfree_B03 = gdal.Open(dataset[k]["s2_cloud_free_B03"]).ReadAsArray()
             s2_cloudfree_B04 = gdal.Open(dataset[k]["s2_cloud_free_B04"]).ReadAsArray()
 
-            input = np.stack((s1_hv, s1_vv, s2_cloudy_B04, s2_cloudy_B03, s2_cloudy_B02), axis=-1)
-            ground_truth = np.stack((s2_cloudfree_B04, s2_cloudfree_B03, s2_cloudfree_B02), axis=-1)
+            scaled_s1_hv = ((s1_hv - np.min(s1_hv)) / (np.max(s1_hv) - np.min(s1_hv)) * 2) - 1
+            scaled_s1_vv = ((s1_vv - np.min(s1_vv)) / (np.max(s1_vv) - np.min(s1_vv)) * 2) - 1
+
+            scaled_s2_cloudy_B02 = ((s2_cloudy_B02 - np.min(s2_cloudy_B02)) / (np.max(s2_cloudy_B02) - np.min(s2_cloudy_B02)) * 2) - 1
+            scaled_s2_cloudy_B03 = ((s2_cloudy_B03 - np.min(s2_cloudy_B03)) / (np.max(s2_cloudy_B03) - np.min(s2_cloudy_B03)) * 2) - 1
+            scaled_s2_cloudy_B04 = ((s2_cloudy_B04 - np.min(s2_cloudy_B04)) / (np.max(s2_cloudy_B04) - np.min(s2_cloudy_B04)) * 2) - 1
+            
+            scaled_s2_cloudfree_B02 = ((s2_cloudfree_B02 - np.min(s2_cloudfree_B02)) / (np.max(s2_cloudfree_B02) - np.min(s2_cloudfree_B02)) * 2) - 1
+            scaled_s2_cloudfree_B03 = ((s2_cloudfree_B03 - np.min(s2_cloudfree_B03)) / (np.max(s2_cloudfree_B03) - np.min(s2_cloudfree_B03)) * 2) - 1
+            scaled_s2_cloudfree_B04 = ((s2_cloudfree_B04 - np.min(s2_cloudfree_B04)) / (np.max(s2_cloudfree_B04) - np.min(s2_cloudfree_B04)) * 2) - 1
+
+            input = np.stack((scaled_s1_hv, scaled_s1_vv, scaled_s2_cloudy_B04, scaled_s2_cloudy_B03, scaled_s2_cloudy_B02), axis=-1)
+            ground_truth = np.stack((scaled_s2_cloudfree_B04, scaled_s2_cloudfree_B03, scaled_s2_cloudfree_B02), axis=-1)
+
             batched_data.append((ground_truth, input))
 
         os.chdir("/Users/thomashebrard/thesis/code/project/pix2pix/")
@@ -53,6 +65,16 @@ class DataLoader:
         del s2_cloudfree_B02
         del s2_cloudfree_B03
         del s2_cloudfree_B04
+        del scaled_s1_hv
+        del scaled_s1_vv
+
+        del scaled_s2_cloudy_B02
+        del scaled_s2_cloudy_B03
+        del scaled_s2_cloudy_B04
+
+        del scaled_s2_cloudfree_B02
+        del scaled_s2_cloudfree_B03
+        del scaled_s2_cloudfree_B04
         del input
         del ground_truth
 

@@ -19,14 +19,21 @@ input = np.array([dataset[1]])
 s1_hv = dataset[1][:,:,0]
 s1_vv = dataset[1][:,:,1]
 
-s2_cloudy = dataset[1][:,:,2:]/2000
-s2_cloud_free = dataset[0]/2000
+s2_cloudy = dataset[1][:,:,2:]
+reverted_s2_cloudy = (s2_cloudy + 1) / 2
+reverted_s2_cloudy = (reverted_s2_cloudy * 255).astype(np.uint8)
+
+s2_cloud_free = dataset[0]
+reverted_s2_cloud_free = (s2_cloud_free + 1) / 2
+reverted_s2_cloud_free = (reverted_s2_cloud_free * 255).astype(np.uint8)
 
 gen_image = model.predict(input)
+reverted_generated_output = (gen_image + 1) / 2
+reverted_generated_output = (reverted_generated_output * 1500).astype(np.uint8)
 
 fig, axes = plt.subplots(3, 3, figsize=(16, 8))
 
-axes[0, 0].imshow(s2_cloudy)
+axes[0, 0].imshow(reverted_s2_cloudy)
 axes[0, 0].axis("off")
 axes[0, 0].set_title("S2 RGB cloudy input")
 
@@ -39,12 +46,12 @@ axes[0, 2].axis("off")
 axes[0, 2].set_title("S1 VV input")
 
 # Plot output_image in the second block
-axes[1, 1].imshow(gen_image[0])
+axes[1, 1].imshow(reverted_generated_output[0])
 axes[1, 1].axis("off")
 axes[1, 1].set_title("Generated Output")
 
 # Plot truth_image in the third block
-axes[2, 1].imshow(s2_cloud_free)
+axes[2, 1].imshow(reverted_s2_cloud_free)
 axes[2, 1].axis("off")
 axes[2, 1].set_title("Ground Truth")
 
@@ -54,7 +61,6 @@ axes[1, 2].remove()
 axes[2, 0].remove()
 axes[2, 2].remove()
 
-plt.subplots_adjust(wspace=0.2, hspace=0.3)
 
 fig.suptitle(f"Epoch : x/200, lr: 0.0002, gloss: x, dloss: ")
 fig.savefig("test.png")
