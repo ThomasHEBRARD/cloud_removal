@@ -18,7 +18,7 @@ class DataLoader:
         ) as f:
             self.dataset_test = json.load(f)
 
-        self.dataset_train_keys = list(self.dataset_train.keys())[:100]
+        self.dataset_train_keys = list(self.dataset_train.keys())[:10000]
 
     def load_batch(self, batch_size=1, is_testing=False):
         batched_data = []

@@ -160,7 +160,7 @@ class Pix2Pix:
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
-        n_batches_per_epoch = 10
+        n_batches_per_epoch = 100
 
         for epoch in range(epochs):
             self.data_loader = DataLoader()
@@ -219,7 +219,7 @@ class Pix2Pix:
             self.generator.save(
                 f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/model_epoch_{epoch}.h5"
             )
-
+        self.data_loader = DataLoader()
         BATCH_SIZE = 3
 
         fig, axes = plt.subplots(BATCH_SIZE, 5, figsize=(20, 12))
