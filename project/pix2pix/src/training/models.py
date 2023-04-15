@@ -154,6 +154,7 @@ class Pix2Pix:
         return Model([img_A, img_B], validity)
 
     def train(self, epochs, batch_size=1):
+        self.epochs = epochs
         start_time = datetime.datetime.now()
 
         # Adversarial loss ground truths
@@ -270,7 +271,7 @@ class Pix2Pix:
             plt.subplots_adjust(wspace=0.1, hspace=0.1)
 
             fig.suptitle(
-                f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {round(g_loss, 2)}, d_loss: {round(d_loss, 2)}, accuracy: {round(accuracy, 2)}%"
+                f"Epoch : {epoch}/{self.epochs}, lr: {self.lr}, g_loss: {round(g_loss, 2)}, d_loss: {round(d_loss, 2)}, accuracy: {round(accuracy, 2)}%"
             )
             if save:
                 fig.savefig(f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/result.png")
