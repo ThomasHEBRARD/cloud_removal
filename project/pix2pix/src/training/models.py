@@ -165,11 +165,11 @@ class Pix2Pix:
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
-        n_batches_per_epoch = 5
+        n_batches_per_epoch = 50
 
         for epoch in range(epochs):
             for batch_i in range(1, n_batches_per_epoch + 1):
-                imgs_A, imgs_B = zip(*self.data_loader.load_batch(batch_size))
+                imgs_A, imgs_B = zip(*self.data_loader.load_batch(batch_size=batch_size))
                 imgs_B = np.array(imgs_B)
                 imgs_A = np.array(imgs_A)
                 # ---------------------

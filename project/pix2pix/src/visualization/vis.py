@@ -10,7 +10,7 @@ sys.path.append("..")
 from src.training.models import Pix2Pix
 from src.dataset.make_dataset import DataLoader
 
-epoch = 10
+epoch = 60
 model = load_model(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
 dataset = DataLoader().load_batch(is_testing=True)[0]
@@ -29,7 +29,7 @@ reverted_s2_cloud_free = (reverted_s2_cloud_free * 255).astype(np.uint8)
 
 gen_image = model.predict(input)
 reverted_generated_output = (gen_image + 1) / 2
-reverted_generated_output = (reverted_generated_output * 1500).astype(np.uint8)
+reverted_generated_output = (reverted_generated_output * 255).astype(np.uint8)
 
 fig, axes = plt.subplots(3, 3, figsize=(16, 8))
 
@@ -62,6 +62,6 @@ axes[2, 0].remove()
 axes[2, 2].remove()
 
 
-fig.suptitle(f"Epoch : x/200, lr: 0.0002, gloss: x, dloss: ")
-fig.savefig("test.png")
+fig.suptitle(f"Epoch : {epoch}/200, lr: 0.0002, gloss: x, dloss: ")
+fig.savefig("../../vis/adhoc_vis.png")
 plt.close()
