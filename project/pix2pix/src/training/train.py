@@ -11,4 +11,4 @@ with open("config.json", "r") as file:
 
 model = Pix2Pix(lr=config["lr"], gf=config["gf"], df=config["df"], train=True)
 
-model.train(epochs=config["epochs"], batch_size=20)
+model.train(epochs=config["epochs"], batch_size=1)

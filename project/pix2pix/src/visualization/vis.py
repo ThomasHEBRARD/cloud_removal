@@ -10,22 +10,31 @@ sys.path.append("..")
 from src.training.models import Pix2Pix
 from src.dataset.make_dataset import DataLoader
 
-model = load_model("models/model_epoch_0/model_epoch_0.h5")
-pix = Pix2Pix()
-data = DataLoader().generator_data()
-gen_image = model.predict(data[1])
+epoch = 10
+model = load_model(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
+
+dataset = DataLoader().load_batch(is_testing=True)[0]
+input = np.array([dataset[1]])
+
+s1_hv = dataset[1][:,:,0]
+s1_vv = dataset[1][:,:,1]
+
+s2_cloudy = dataset[1][:,:,2:]/2000
+s2_cloud_free = dataset[0]/2000
+
+gen_image = model.predict(input)
 
 fig, axes = plt.subplots(3, 3, figsize=(16, 8))
 
-axes[0, 0].imshow(data[1][0][:, :, 2:])
+axes[0, 0].imshow(s2_cloudy)
 axes[0, 0].axis("off")
 axes[0, 0].set_title("S2 RGB cloudy input")
 
-axes[0, 1].imshow(data[1][0][:, :, 0])
+axes[0, 1].imshow(s1_hv)
 axes[0, 1].axis("off")
 axes[0, 1].set_title("S1 VH input")
 
-axes[0, 2].imshow(data[1][0][:, :, 1])
+axes[0, 2].imshow(s1_vv)
 axes[0, 2].axis("off")
 axes[0, 2].set_title("S1 VV input")
 
@@ -35,7 +44,7 @@ axes[1, 1].axis("off")
 axes[1, 1].set_title("Generated Output")
 
 # Plot truth_image in the third block
-axes[2, 1].imshow(data[0][0])
+axes[2, 1].imshow(s2_cloud_free)
 axes[2, 1].axis("off")
 axes[2, 1].set_title("Ground Truth")
 
@@ -48,5 +57,5 @@ axes[2, 2].remove()
 plt.subplots_adjust(wspace=0.2, hspace=0.3)
 
 fig.suptitle(f"Epoch : x/200, lr: 0.0002, gloss: x, dloss: ")
-fig.savefig("test2.png")
+fig.savefig("test.png")
 plt.close()
