@@ -33,12 +33,6 @@ class Pix2Pix:
         self.channels = 5
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
 
-        # Configure data loader
-        if train:
-            self.data_loader = DataLoader()
-        else:
-            self.dataset = ([], [])
-
         # Calculate output shape of D (PatchGAN)
         patch = int(self.img_rows / 2**4)
         self.disc_patch = (patch, patch, 1)
@@ -168,6 +162,7 @@ class Pix2Pix:
         n_batches_per_epoch = 10
 
         for epoch in range(epochs):
+            self.data_loader = DataLoader()
             for batch_i in range(1, n_batches_per_epoch + 1):
                 imgs_A, imgs_B = zip(
                     *self.data_loader.load_batch(batch_size=batch_size)
@@ -278,7 +273,7 @@ class Pix2Pix:
                 f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {round(g_loss, 2)}, d_loss: {round(d_loss, 2)}, accuracy: {round(accuracy, 2)}%"
             )
             if save:
-                fig.savefig(f"models/model_epoch_{epoch}/result.png")
+                fig.savefig(f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/result.png")
             else:
                 fig.savefig(f"vis/result_epoch_{epoch}.png")
             plt.close()

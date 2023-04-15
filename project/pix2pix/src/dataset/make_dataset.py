@@ -18,18 +18,21 @@ class DataLoader:
         ) as f:
             self.dataset_test = json.load(f)
 
-        self.dataset_train_keys = self.dataset_train.keys()
+        self.dataset_train_keys = list(self.dataset_train.keys())[:100]
 
     def load_batch(self, batch_size=1, is_testing=False):
         batched_data = []
         dataset = {}
         if is_testing:
             dataset = self.dataset_test
+            keys = self.dataset_train_keys
         else:
             dataset = self.dataset_train
+            keys = list(self.dataset_test.keys())
 
-        data_keys = random.sample(dataset.keys(), batch_size)
-        self.n_batches = int(len(list(dataset.keys())) / batch_size)
+        np.random.shuffle(keys)
+        data_keys = keys[:batch_size]
+        self.n_batches = int(len(list(keys)) / batch_size)
 
         os.chdir("/Users/thomashebrard/thesis/code/preprocess/")
 
