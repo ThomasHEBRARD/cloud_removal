@@ -3,6 +3,8 @@ import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 
+from osgeo import gdal
+
 from keras.layers import Input, Dropout, Concatenate
 from keras.layers import BatchNormalization
 from keras.layers import LeakyReLU
@@ -33,7 +35,7 @@ class Pix2Pix:
 
         # Configure data loader
         if train:
-            self.datal_loader = DataLoader()
+            self.data_loader = DataLoader()
         else:
             self.dataset = ([], [])
 
@@ -163,9 +165,13 @@ class Pix2Pix:
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
+        n_batches_per_epoch = 10
 
-        for epoch in epochs:
-            for batch_i, (imgs_A, imgs_B) in enumerate(self.datal_loader.load_batch(batch_size)):
+        for epoch in range(epochs):
+            for batch_i in range(n_batches_per_epoch):
+                imgs_A, imgs_B = zip(*self.data_loader.load_batch(batch_size))
+                imgs_B = np.array(imgs_B)
+                imgs_A = np.array(imgs_A)
                 # ---------------------
                 #  Train Discriminator
                 # ---------------------
@@ -193,7 +199,7 @@ class Pix2Pix:
                         epoch,
                         epochs,
                         batch_i,
-                        self.datal_loader.n_batches,
+                        n_batches_per_epoch,
                         d_loss[0],
                         100 * d_loss[1],
                         g_loss[0],
@@ -201,25 +207,34 @@ class Pix2Pix:
                     )
                 )
 
-                if epoch == 0:
-                    self.save_model(epoch, d_loss[0], g_loss[0], 100 * d_loss[1])
+            self.save_model(epoch, d_loss[0], g_loss[0], 100 * d_loss[1], save=epoch % (epochs // 20) == 0)
 
-    def save_model(self, epoch, d_loss, g_loss, accuracy):
-        self.generator.save(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
+    def save_model(self, epoch, d_loss, g_loss, accuracy, save=False):
+        if save:
+            self.generator.save(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
-        gen_image = self.generator.predict(self.dataset[1])
+        dataset = self.data_loader.load_batch(is_testing=True)[0]
+        input = np.array([dataset[1]])
+
+        s1_hv = dataset[1][:,:,0]
+        s1_vv = dataset[1][:,:,1]
+
+        s2_cloudy = dataset[1][:,:,2:]/2000
+        s2_cloud_free = dataset[0]/2000
+
+        gen_image = self.generator.predict(input)
 
         fig, axes = plt.subplots(3, 3, figsize=(16, 8))
 
-        axes[0, 0].imshow(self.dataset[1][0][:, :, 2:])
+        axes[0, 0].imshow(s2_cloudy)
         axes[0, 0].axis("off")
         axes[0, 0].set_title("S2 RGB cloudy input")
 
-        axes[0, 1].imshow(self.dataset[1][0][:, :, 0])
+        axes[0, 1].imshow(s1_hv)
         axes[0, 1].axis("off")
         axes[0, 1].set_title("S1 VH input")
 
-        axes[0, 2].imshow(self.dataset[1][0][:, :, 1])
+        axes[0, 2].imshow(s1_vv)
         axes[0, 2].axis("off")
         axes[0, 2].set_title("S1 VV input")
 
@@ -229,7 +244,7 @@ class Pix2Pix:
         axes[1, 1].set_title("Generated Output")
 
         # Plot truth_image in the third block
-        axes[2, 1].imshow(self.dataset[0][0])
+        axes[2, 1].imshow(s2_cloud_free)
         axes[2, 1].axis("off")
         axes[2, 1].set_title("Ground Truth")
 
@@ -244,5 +259,8 @@ class Pix2Pix:
         fig.suptitle(
             f"Epoch : {epoch}/200, lr: {self.lr}, g_loss: {g_loss}, d_loss: {d_loss}, accuracy: {accuracy}%"
         )
-        fig.savefig(f"models/model_epoch_{epoch}/result.png")
+        if save:
+            fig.savefig(f"models/model_epoch_{epoch}/result.png")
+        else:
+            fig.savefig(f"vis/result_epoch_{epoch}.png")
         plt.close()
