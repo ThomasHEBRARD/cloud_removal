@@ -10,8 +10,9 @@ sys.path.append("..")
 from src.training.models import Pix2Pix
 from src.dataset.make_dataset import DataLoader
 
-epoch = 100
-model = load_model(f"models/model_epoch_{epoch}/model_epoch_{epoch}.h5")
+epoch = 0
+start = "2023-04-15T23:47:46"
+model = load_model(f"models/run_{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
 BATCH_SIZE = 3
 

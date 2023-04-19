@@ -25,10 +25,10 @@ class DataLoader:
         dataset = {}
         if is_testing:
             dataset = self.dataset_test
-            keys = self.dataset_train_keys
+            keys = list(dataset.keys())
         else:
             dataset = self.dataset_train
-            keys = list(self.dataset_test.keys())
+            keys = self.dataset_train_keys
 
         np.random.shuffle(keys)
         data_keys = keys[:batch_size]
