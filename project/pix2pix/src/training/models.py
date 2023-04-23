@@ -1,9 +1,8 @@
 import os
+import json
 import datetime
 import numpy as np
 import matplotlib.pyplot as plt
-
-from osgeo import gdal
 
 from keras.layers import Input, Dropout, Concatenate
 from keras.layers import BatchNormalization
@@ -11,7 +10,6 @@ from keras.layers import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Conv2D
 
 from keras.models import Model
-from keras.models import load_model
 
 from keras.optimizers import Adam
 import sys
@@ -23,15 +21,19 @@ from src.dataset.make_dataset import DataLoader
 
 
 class Pix2Pix:
-    def __init__(self, lr=0.0002, gf=64, df=64, train=False):
+    def __init__(
+        self, bands=["B02", "B03", "B04"], lr=0.0002, gf=64, df=64, train=False
+    ):
         # Input shape
+        self.bands = bands
         self.lr = lr
         self.gf = gf
         self.df = df
         self.img_rows = 256
         self.img_cols = 256
-        self.channels = 5
-        self.img_shape = (self.img_rows, self.img_cols, self.channels)
+        self.input_channels_generator = len(bands) + 2
+        self.input_channels_discriminator = 3
+        self.output_channels = 3
 
         # Calculate output shape of D (PatchGAN)
         patch = int(self.img_rows / 2**4)
@@ -54,8 +56,12 @@ class Pix2Pix:
         self.generator = self.build_generator()
 
         # Input images and their conditioning images
-        img_A = Input(shape=(self.img_rows, self.img_cols, 3))
-        img_B = Input(shape=(self.img_rows, self.img_cols, 5))
+        img_A = Input(
+            shape=(self.img_rows, self.img_cols, self.input_channels_discriminator)
+        )
+        img_B = Input(
+            shape=(self.img_rows, self.img_cols, self.input_channels_generator)
+        )
 
         # By conditioning on B generate a fake version of A
         fake_A = self.generator(img_B)
@@ -101,7 +107,7 @@ class Pix2Pix:
             return u
 
         # Image input
-        d0 = Input(shape=(self.img_rows, self.img_cols, 5))
+        d0 = Input(shape=(self.img_rows, self.img_cols, self.input_channels_generator))
 
         # Downsampling
         d1 = conv2d(d0, self.gf, bn=False)
@@ -122,7 +128,11 @@ class Pix2Pix:
 
         u7 = UpSampling2D(size=2)(u6)
         output_img = Conv2D(
-            3, kernel_size=4, strides=1, padding="same", activation="tanh"
+            self.output_channels,
+            kernel_size=4,
+            strides=1,
+            padding="same",
+            activation="tanh",
         )(u7)
 
         return Model(d0, output_img)
@@ -138,8 +148,12 @@ class Pix2Pix:
                 d = BatchNormalization(momentum=0.8)(d)
             return d
 
-        img_A = Input(shape=(self.img_rows, self.img_cols, 3))
-        img_B = Input(shape=(self.img_rows, self.img_cols, 5))
+        img_A = Input(
+            shape=(self.img_rows, self.img_cols, self.input_channels_discriminator)
+        )
+        img_B = Input(
+            shape=(self.img_rows, self.img_cols, self.input_channels_generator)
+        )
 
         # Concatenate image and conditioning image by channels to produce input
         combined_imgs = Concatenate(axis=-1)([img_A, img_B])
@@ -153,23 +167,25 @@ class Pix2Pix:
 
         return Model([img_A, img_B], validity)
 
-    def train(self, epochs, batch_size=1):
+    def train(self, epochs, nb_batches_per_epoch=100, batch_size=1):
         self.epochs = epochs
         start_time = datetime.datetime.now()
 
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
         fake = np.zeros((batch_size,) + self.disc_patch)
-        n_batches_per_epoch = 100
 
         for epoch in range(epochs):
             self.data_loader = DataLoader()
-            for batch_i in range(1, n_batches_per_epoch + 1):
+            for batch_i in range(1, nb_batches_per_epoch + 1):
                 imgs_A, imgs_B = zip(
-                    *self.data_loader.load_batch(batch_size=batch_size)
+                    *self.data_loader.load_batch(
+                        bands=self.bands, batch_size=batch_size
+                    )
                 )
                 imgs_B = np.array(imgs_B)
                 imgs_A = np.array(imgs_A)
+
                 # ---------------------
                 #  Train Discriminator
                 # ---------------------
@@ -197,7 +213,7 @@ class Pix2Pix:
                         epoch,
                         epochs,
                         batch_i,
-                        n_batches_per_epoch,
+                        nb_batches_per_epoch,
                         d_loss[0],
                         100 * d_loss[1],
                         g_loss[0],
@@ -219,62 +235,124 @@ class Pix2Pix:
             self.generator.save(
                 f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/model_epoch_{epoch}.h5"
             )
+            with open(
+                f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/config.json",
+                "w",
+            ) as f:
+                with open(f"config.json", "r") as conf:
+                    config = json.load(conf)
+                    json.dump(config, f)
+
         savemode_data_loader = DataLoader()
-        BATCH_SIZE = 3
 
-        fig, axes = plt.subplots(BATCH_SIZE, 5, figsize=(20, 12))
-
-        dA, dB = zip(
-            *savemode_data_loader.load_batch(batch_size=BATCH_SIZE, is_testing=True)
+        ground_truth, input = zip(
+            *savemode_data_loader.load_batch(
+                bands=self.bands, batch_size=1, is_testing=True
+            )
         )
-        dB = np.array(dB)
-        dA = np.array(dA)
 
-        input = dB
+        input = np.array(input)
 
-        s1_hv = dB[:, :, :, 0]
-        s1_vv = dB[:, :, :, 1]
+        ground_truth = (((np.array(ground_truth) + 1) / 2) * 255).astype(np.uint8)
 
-        gen_image = self.generator.predict(input)
-        reverted_generated_output = (gen_image + 1) / 2
-        reverted_generated_output = (reverted_generated_output * 255).astype(np.uint8)
+        output = self.generator.predict(input)
+        generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 
-        s2_cloudy = dB[:, :, :, 2:]
-        reverted_s2_cloudy = (s2_cloudy + 1) / 2
-        reverted_s2_cloudy = (reverted_s2_cloudy * 255).astype(np.uint8)
+        input_dict = {
+            "s1_hv": {"title": "S1 HV", "image": input[:, :, :, 0]},
+            "s1_vv": {"title": "S1 VV", "image": input[:, :, :, 1]},
+        }
+        for i in range(2, len(self.bands) + 2):
+            input_dict[f"s2_{self.bands[i - 2]}"] = {
+                "title": f"S2 {self.bands[i - 2]}",
+                "image": (((input[:, :, :, i] + 1) / 2) * 255).astype(np.uint8),
+            }
 
-        s2_cloud_free = dA
-        reverted_s2_cloud_free = (s2_cloud_free + 1) / 2
-        reverted_s2_cloud_free = (reverted_s2_cloud_free * 255).astype(np.uint8)
+        #####################################
+        ########     PLOT THE INPUT  ########
+        #####################################
 
-        for i in range(BATCH_SIZE):
-            axes[i, 0].imshow(reverted_s2_cloudy[i])
-            axes[i, 0].axis("off")
-            axes[i, 0].set_title("S2 RGB cloudy input")
+        for idx_img in range(1):
+            num_images = len(self.bands) + 2
+            num_rows = (num_images + 3) // 4
 
-            axes[i, 1].imshow(s1_hv[i])
-            axes[i, 1].axis("off")
-            axes[i, 1].set_title("S1 VH input")
+            fig1, axes1 = plt.subplots(num_rows, 4, figsize=(16, 8))
+            fig1.suptitle("Name + date ?")
 
-            axes[i, 2].imshow(s1_vv[i])
-            axes[i, 2].axis("off")
-            axes[i, 2].set_title("S1 VV input")
-            # Ploidx output_image in the second block
-            axes[i, 3].imshow(reverted_generated_output[i])
-            axes[i, 3].axis("off")
-            axes[i, 3].set_title("Generated Output")
-            # Ploidx truth_image in the third block
-            axes[i, 4].imshow(reverted_s2_cloud_free[i])
-            axes[i, 4].axis("off")
-            axes[i, 4].set_title("Ground Truth")
+            for i in range(num_rows):
+                for j in range(4):
+                    idx = i * 4 + j
+                    if idx < num_images:
+                        ax = axes1[i, j] if num_rows > 1 else axes1[j]
+                        if idx == 0:
+                            ax.imshow(input_dict["s1_hv"]["image"][idx_img])
+                            ax.set_title(input_dict["s1_hv"]["title"])
+                            ax.axis("off")
+                        elif idx == 1:
+                            ax.imshow(input_dict["s1_vv"]["image"][idx_img])
+                            ax.set_title(input_dict["s1_vv"]["title"])
+                            ax.axis("off")
+                        else:
+                            band = self.bands[idx - 2]
+                            ax.imshow(input_dict[f"s2_{band}"]["image"][idx_img])
+                            ax.set_title(input_dict[f"s2_{band}"]["title"])
+                            ax.axis("off")
+                    else:
+                        (axes1[i, j] if num_rows > 1 else axes1[j]).axis("off")
 
-            plt.subplots_adjust(wspace=0.1, hspace=0.1)
+            if save:
+                fig1.savefig(
+                    f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/input.png"
+                )
+            else:
+                directory = (
+                    f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/"
+                )
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                fig1.savefig(
+                    f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/input.png"
+                )
 
-            fig.suptitle(
+            #####################################
+            ########     PLOT THE OUTPUT ########
+            #####################################
+
+            fig2, axes2 = plt.subplots(1, 3, figsize=(16, 8))
+            fig2.suptitle(
                 f"Epoch : {epoch}/{self.epochs}, lr: {self.lr}, g_loss: {round(g_loss, 2)}, d_loss: {round(d_loss, 2)}, accuracy: {round(accuracy, 2)}%"
             )
+
+            cloudy_input = np.stack(
+                (
+                    input_dict[f"s2_B04"]["image"][idx_img],
+                    input_dict[f"s2_B03"]["image"][idx_img],
+                    input_dict[f"s2_B02"]["image"][idx_img],
+                ),
+                axis=-1,
+            )
+
+            axes2[0].imshow(cloudy_input)
+            axes2[0].set_title(f"Sentinel-2 Cloudy Input")
+            axes2[0].axis("off")
+
+            axes2[1].imshow(generated_image[idx_img])
+            axes2[1].set_title(f"Generated Output")
+            axes2[1].axis("off")
+
+            axes2[2].imshow(ground_truth[idx_img])
+            axes2[2].set_title(f"Ground Truth")
+            axes2[2].axis("off")
+
+            plt.tight_layout()
+
             if save:
-                fig.savefig(f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/result.png")
+                fig2.savefig(
+                    f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/result.png"
+                )
             else:
-                fig.savefig(f"vis/result_epoch_{epoch}.png")
+                fig2.savefig(
+                    f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/result.png"
+                )
+
             plt.close()

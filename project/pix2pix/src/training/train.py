@@ -9,6 +9,12 @@ from models import Pix2Pix
 with open("config.json", "r") as file:
     config = json.load(file)
 
-model = Pix2Pix(lr=config["lr"], gf=config["gf"], df=config["df"], train=True)
+model = Pix2Pix(
+    bands=config["bands"], lr=config["lr"], gf=config["gf"], df=config["df"], train=True
+)
 
-model.train(epochs=config["epochs"], batch_size=config["batch_size"])
+model.train(
+    epochs=config["epochs"],
+    nb_batches_per_epoch=config["nb_batches_per_epoch"],
+    batch_size=config["batch_size"],
+)
