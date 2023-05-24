@@ -10,7 +10,7 @@ from keras.layers import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Conv2D
 
 from keras.models import Model
-
+import keras.backend as K
 from keras.optimizers import Adam
 import sys
 
@@ -31,7 +31,7 @@ class Pix2Pix:
         self.df = df
         self.img_rows = 256
         self.img_cols = 256
-        self.input_channels_generator = len(bands) + 2
+        self.input_channels_generator = len(bands) + 6
         self.input_channels_discriminator = 3
         self.output_channels = 3
 
@@ -44,7 +44,7 @@ class Pix2Pix:
         # Build and compile the discriminator
         self.discriminator = self.build_discriminator()
         self.discriminator.compile(
-            loss="mse", optimizer=optimizer, metrics=["accuracy"]
+            loss="mae", optimizer=optimizer, metrics=["accuracy"]
         )
 
         # -------------------------
@@ -73,8 +73,23 @@ class Pix2Pix:
         valid = self.discriminator([fake_A, img_B])
 
         self.combined = Model(inputs=[img_A, img_B], outputs=[valid, fake_A])
+        
+
+        def carl_error(y_true, y_pred):
+            """Computes the Cloud-Adaptive Regularized Loss (CARL)"""
+            cloud_cloudshadow_mask = y_true[:, -1:, :, :]
+            clearmask = K.ones_like(y_true[:, -1:, :, :]) - y_true[:, -1:, :, :]
+            predicted = y_pred[:, 0:13, :, :]
+            input_cloudy = y_pred[:, -14:-1, :, :]
+            target = y_true[:, 0:13, :, :]
+
+            cscmae = K.mean(clearmask * K.abs(predicted - input_cloudy) + cloud_cloudshadow_mask * K.abs(
+                predicted - target)) + 1.0 * K.mean(K.abs(predicted - target))
+
+            return cscmae
+        
         self.combined.compile(
-            loss=["mse", "mae"], loss_weights=[1, 100], optimizer=optimizer
+            loss=carl_error, loss_weights=[1, 100], optimizer=optimizer
         )
 
     def build_generator(self):
@@ -231,12 +246,20 @@ class Pix2Pix:
             )
 
     def save_model(self, epoch, d_loss, g_loss, accuracy, start_time, save=False):
+        file_dir = f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}"
+        os.makedirs(file_dir, exist_ok=True)
+
+        with open(f"{file_dir}/d_loss.txt", "w+") as f:
+            f.write(str(epoch) + "," + str(d_loss) + "\n")
+        with open(f"{file_dir}/g_loss.txt", "w+") as f:
+            f.write(str(epoch) + "," + str(g_loss) + "\n")
+
         if save:
             self.generator.save(
-                f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/model_epoch_{epoch}.h5"
+                f"{file_dir}/model_epoch_{epoch}/model_epoch_{epoch}.h5"
             )
             with open(
-                f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/config.json",
+                f"{file_dir}/config.json",
                 "w",
             ) as f:
                 with open(f"config.json", "r") as conf:

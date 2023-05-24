@@ -7,12 +7,12 @@ from osgeo import gdal
 class DataLoader:
     def __init__(self):
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_timeseries_train.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_train.json",
             "r",
         ) as f:
             self.dataset_train = json.load(f)
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_timeseries_test.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_test.json",
             "r",
         ) as f:
             self.dataset_test = json.load(f)
@@ -40,10 +40,6 @@ class DataLoader:
         for k in data_keys:
             s1_hv = gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()
             s1_vv = gdal.Open(dataset[k]["s1_vv"]).ReadAsArray()
-            s1_hv_p1 = gdal.Open(dataset[k]["s1_hv_+1"]).ReadAsArray()
-            s1_vv_m1 = gdal.Open(dataset[k]["s1_vv_-1"]).ReadAsArray()
-            s1_hv_m1 = gdal.Open(dataset[k]["s1_hv_-1"]).ReadAsArray()
-            s1_vv_p1 = gdal.Open(dataset[k]["s1_vv_+1"]).ReadAsArray()
 
             s2_cloudy = {
                 band: gdal.Open(dataset[k][f"s2_cloudy_{band}"]).ReadAsArray()
@@ -59,18 +55,9 @@ class DataLoader:
 
             s1_hv = np.clip(s1_hv, CLIP_MIN_S1, CLIP_MAX_S1)
             s1_vv = np.clip(s1_vv, CLIP_MIN_S1, CLIP_MAX_S1)
-            s1_hv_p1 = np.clip(s1_hv_p1, CLIP_MIN_S1, CLIP_MAX_S1)
-            s1_vv_m1 = np.clip(s1_vv_m1, CLIP_MIN_S1, CLIP_MAX_S1)
-            s1_hv_m1 = np.clip(s1_hv_m1, CLIP_MIN_S1, CLIP_MAX_S1)
-            s1_vv_p1 = np.clip(s1_vv_p1, CLIP_MIN_S1, CLIP_MAX_S1)
-            
 
             scaled_s1_hv = ((s1_hv - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
             scaled_s1_vv = ((s1_vv - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            scaled_s1_hv_p1 = ((s1_hv_p1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            scaled_s1_vv_m1 = ((s1_vv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            scaled_s1_hv_m1 = ((s1_hv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            scaled_s1_vv_p1 = ((s1_vv_p1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
 
             CLIP_MIN_S2, CLIP_MAX_S2 = 100, 5800
             for band in bands:
@@ -95,10 +82,6 @@ class DataLoader:
                 (
                     scaled_s1_hv,
                     scaled_s1_vv,
-                    scaled_s1_hv_p1,
-                    scaled_s1_vv_m1,
-                    scaled_s1_hv_m1,
-                    scaled_s1_vv_p1,
                     s2_cloudy["B04"],
                     s2_cloudy["B03"],
                     s2_cloudy["B02"],
@@ -116,7 +99,7 @@ class DataLoader:
 
             batched_data.append((ground_truth, input))
 
-        os.chdir("/Users/thomashebrard/thesis/code/project/pix2pix/")
+        os.chdir("/Users/thomashebrard/thesis/code/project/cnn/")
 
         del s1_hv
         del s1_vv
