@@ -199,9 +199,11 @@ class Pix2Pix:
                         bands=self.bands, batch_size=batch_size
                     )
                 )
-                imgs_B = np.array(imgs_B)
-                imgs_A = np.array(imgs_A)
 
+                imgs_B = np.array([[d["data"] for d in inner_array] for inner_array in np.array(imgs_B)])
+                imgs_B = np.transpose(imgs_B, (0, 2, 3, 1))
+                imgs_A = np.array([[d["data"] for d in inner_array] for inner_array in np.array(imgs_A)])
+                imgs_A = np.transpose(imgs_A, (0, 2, 3, 1))
                 # ---------------------
                 #  Train Discriminator
                 # ---------------------
@@ -250,9 +252,9 @@ class Pix2Pix:
         file_dir = f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}"
         os.makedirs(file_dir, exist_ok=True)
 
-        with open(f"{file_dir}/d_loss.txt", "w+") as f:
+        with open(f"{file_dir}/d_loss.txt", "a") as f:
             f.write(str(epoch) + "," + str(d_loss) + "\n")
-        with open(f"{file_dir}/g_loss.txt", "w+") as f:
+        with open(f"{file_dir}/g_loss.txt", "a") as f:
             f.write(str(epoch) + "," + str(g_loss) + "\n")
 
         if save:
@@ -276,20 +278,26 @@ class Pix2Pix:
         )
 
         input = np.array(input)
+        input_pred = np.array([[d["data"] for d in inner_array] for inner_array in np.array(input)])
+        input_pred = np.transpose(input_pred, (0, 2, 3, 1))
 
-        ground_truth = (((np.array(ground_truth) + 1) / 2) * 255).astype(np.uint8)
+        # ground_truth = (((np.array(ground_truth) + 1) / 2) * 255).astype(np.uint8)
+        ground_truth = np.array([[d["data"] for d in inner_array] for inner_array in np.array(ground_truth)])
+        ground_truth = np.transpose(ground_truth, (0, 2, 3, 1))
 
-        output = self.generator.predict(input)
+        output = self.generator.predict(input_pred)
         generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 
         input_dict = {
-            "s1_hv": {"title": "S1 HV", "image": input[:, :, :, 0]},
-            "s1_vv": {"title": "S1 VV", "image": input[:, :, :, 1]},
+            "s1_hv": {"title": "S1 HV", "desc": input[0][0]["im"].split("/")[-1], "image": input_pred[:, :, :, 0]},
+            "s1_vv": {"title": "S1 VV", "desc": input[0][1]["im"].split("/")[-1], "image": input_pred[:, :, :, 1]},
         }
+
         for i in range(2, len(self.bands) + 2):
             input_dict[f"s2_{self.bands[i - 2]}"] = {
                 "title": f"S2 {self.bands[i - 2]}",
-                "image": (((input[:, :, :, i] + 1) / 2) * 255).astype(np.uint8),
+                "desc": input[0][i]["im"].split("/")[-1],
+                "image": (((input_pred[:, :, :, i] + 1) / 2) * 255).astype(np.uint8),
             }
 
         #####################################
@@ -301,7 +309,7 @@ class Pix2Pix:
             num_rows = (num_images + 3) // 4
 
             fig1, axes1 = plt.subplots(num_rows, 4, figsize=(16, 8))
-            fig1.suptitle("Name + date ?")
+            fig1.suptitle("Input")
 
             for i in range(num_rows):
                 for j in range(4):
@@ -310,16 +318,16 @@ class Pix2Pix:
                         ax = axes1[i, j] if num_rows > 1 else axes1[j]
                         if idx == 0:
                             ax.imshow(input_dict["s1_hv"]["image"][idx_img])
-                            ax.set_title(input_dict["s1_hv"]["title"])
+                            ax.set_title("_".join(input_dict["s1_hv"]["desc"].split("_")[:5]))
                             ax.axis("off")
                         elif idx == 1:
                             ax.imshow(input_dict["s1_vv"]["image"][idx_img])
-                            ax.set_title(input_dict["s1_vv"]["title"])
+                            ax.set_title("_".join(input_dict["s1_vv"]["desc"].split("_")[:5]))
                             ax.axis("off")
                         else:
                             band = self.bands[idx - 2]
                             ax.imshow(input_dict[f"s2_{band}"]["image"][idx_img])
-                            ax.set_title(input_dict[f"s2_{band}"]["title"])
+                            ax.set_title("_".join(input_dict[f"s2_{band}"]["desc"].split("_")[:5]))
                             ax.axis("off")
                     else:
                         (axes1[i, j] if num_rows > 1 else axes1[j]).axis("off")
@@ -328,6 +336,11 @@ class Pix2Pix:
                 fig1.savefig(
                     f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/input.png"
                 )
+                with open(f"{file_dir}/model_epoch_{epoch}/input.txt", "a") as f:
+                    f.write(input_dict["s1_hv"]["desc"].split(".")[0] + "\n")
+                    f.write(input_dict["s1_vv"]["desc"].split(".")[0] + "\n")
+                    f.write(input_dict[f"s2_B02"]["desc"].split(".")[0] + "\n")
+
             else:
                 directory = (
                     f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/"

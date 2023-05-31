@@ -7,12 +7,12 @@ from osgeo import gdal
 class DataLoader:
     def __init__(self):
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_timeseries_train.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_train.json",
             "r",
         ) as f:
             self.dataset_train = json.load(f)
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_timeseries_test.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_test.json",
             "r",
         ) as f:
             self.dataset_test = json.load(f)
@@ -38,35 +38,35 @@ class DataLoader:
         os.chdir("/Users/thomashebrard/thesis/code/preprocess/")
 
         for k in data_keys:
-            s1_hv = gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()
-            s1_vv = gdal.Open(dataset[k]["s1_vv"]).ReadAsArray()
+            s1_hv = {"im": dataset[k]["s1_hv"], "data": gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()}
+            s1_vv = {"im": dataset[k]["s1_vv"], "data": gdal.Open(dataset[k]["s1_vv"]).ReadAsArray()}
             # s1_hv_p1 = {"im": dataset[k]["s1_hv_+1"], "data": gdal.Open(dataset[k]["s1_hv_+1"]).ReadAsArray()}
             # s1_vv_m1 = {"im": dataset[k]["s1_vv_-1"], "data": gdal.Open(dataset[k]["s1_vv_-1"]).ReadAsArray()}
             # s1_hv_m1 = {"im": dataset[k]["s1_hv_-1"], "data": gdal.Open(dataset[k]["s1_hv_-1"]).ReadAsArray()}
             # s1_vv_p1 = {"im": dataset[k]["s1_vv_+1"], "data": gdal.Open(dataset[k]["s1_vv_+1"]).ReadAsArray()}
 
             s2_cloudy = {
-                band: gdal.Open(dataset[k][f"s2_cloudy_{band}"]).ReadAsArray()
+                band: {"im": dataset[k][f"s2_cloudy_{band}"], "data": gdal.Open(dataset[k][f"s2_cloudy_{band}"]).ReadAsArray()}
                 for band in bands
             }
             s2_cloudfree = {
-                band: gdal.Open(dataset[k][f"s2_cloud_free_{band}"]).ReadAsArray()
+                band:  {"im": dataset[k][f"s2_cloud_free_{band}"], "data": gdal.Open(dataset[k][f"s2_cloud_free_{band}"]).ReadAsArray()}
                 for band in ["B04", "B03", "B02"]
             }
 
-            ##### CLIP DATA
+            ##### CLIP DATA #####
             CLIP_MIN_S1, CLIP_MAX_S1 = -28000, 13000
 
-            s1_hv = np.clip(s1_hv, CLIP_MIN_S1, CLIP_MAX_S1)
-            s1_vv = np.clip(s1_vv, CLIP_MIN_S1, CLIP_MAX_S1)
+            s1_hv["data"] = np.clip(s1_hv["data"], CLIP_MIN_S1, CLIP_MAX_S1)
+            s1_vv["data"] = np.clip(s1_vv["data"], CLIP_MIN_S1, CLIP_MAX_S1)
             # s1_hv_p1 = np.clip(s1_hv_p1, CLIP_MIN_S1, CLIP_MAX_S1)
             # s1_vv_m1 = np.clip(s1_vv_m1, CLIP_MIN_S1, CLIP_MAX_S1)
             # s1_hv_m1 = np.clip(s1_hv_m1, CLIP_MIN_S1, CLIP_MAX_S1)
             # s1_vv_p1 = np.clip(s1_vv_p1, CLIP_MIN_S1, CLIP_MAX_S1)
             
 
-            scaled_s1_hv = ((s1_hv - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            scaled_s1_vv = ((s1_vv - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
+            s1_hv["data"] = ((s1_hv["data"] - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
+            s1_vv["data"] = ((s1_vv["data"] - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
             # scaled_s1_hv_p1 = ((s1_hv_p1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
             # scaled_s1_vv_m1 = ((s1_vv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
             # scaled_s1_hv_m1 = ((s1_hv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
@@ -74,16 +74,16 @@ class DataLoader:
 
             CLIP_MIN_S2, CLIP_MAX_S2 = 100, 5800
             for band in bands:
-                s2_cloudy[band] = np.clip(s2_cloudy[band], CLIP_MIN_S2, CLIP_MAX_S2)
-                s2_cloudy[band] = (s2_cloudy[band] - CLIP_MIN_S2) / (
+                s2_cloudy[band]["data"] = np.clip(s2_cloudy[band]["data"], CLIP_MIN_S2, CLIP_MAX_S2)
+                s2_cloudy[band]["data"] = (s2_cloudy[band]["data"] - CLIP_MIN_S2) / (
                     CLIP_MAX_S2 - CLIP_MIN_S2
                 ) * 2 - 1
 
             for band in ["B04", "B03", "B02"]:
-                s2_cloudfree[band] = np.clip(
-                    s2_cloudfree[band], CLIP_MIN_S2, CLIP_MAX_S2
+                s2_cloudfree[band]["data"] = np.clip(
+                    s2_cloudfree[band]["data"], CLIP_MIN_S2, CLIP_MAX_S2
                 )
-                s2_cloudfree[band] = (s2_cloudfree[band] - CLIP_MIN_S2) / (
+                s2_cloudfree[band]["data"] = (s2_cloudfree[band]["data"] - CLIP_MIN_S2) / (
                     CLIP_MAX_S2 - CLIP_MIN_S2
                 ) * 2 - 1
 
@@ -93,8 +93,8 @@ class DataLoader:
 
             input = np.stack(
                 (
-                    scaled_s1_hv,
-                    scaled_s1_vv,
+                    s1_hv,
+                    s1_vv,
                     # scaled_s1_hv_p1,
                     # scaled_s1_vv_m1,
                     # scaled_s1_hv_m1,
@@ -111,7 +111,7 @@ class DataLoader:
                 axis=-1,
             )
 
-            if np.mean(s2_cloudfree["B04"]) > 2000:
+            if np.mean(s2_cloudfree["B04"]["data"]) > 2000:
                 continue
 
             batched_data.append((ground_truth, input))
@@ -120,8 +120,6 @@ class DataLoader:
 
         del s1_hv
         del s1_vv
-        del scaled_s1_hv
-        del scaled_s1_vv
 
         del s2_cloudy
         del s2_cloudfree
