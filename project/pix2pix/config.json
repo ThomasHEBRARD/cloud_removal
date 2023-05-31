@@ -1,9 +1,9 @@
 {
-    "epochs": 100,
+    "epochs": 500,
     "lr": 0.0004,
     "gf": 64,
     "df": 64,
-    "batch_size": 2,
+    "batch_size": 10,
     "bands": ["B04", "B03", "B02", "B08"],
-    "nb_batches_per_epoch": 1
+    "nb_batches_per_epoch": 50
 }

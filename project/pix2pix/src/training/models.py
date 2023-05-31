@@ -269,7 +269,7 @@ class Pix2Pix:
                     config = json.load(conf)
                     json.dump(config, f)
 
-        savemode_data_loader = DataLoader()
+        savemode_data_loader = DataLoader(path="S2_32VNH_20190927_B02_525_523020_6266720_256")
 
         ground_truth, input = zip(
             *savemode_data_loader.load_batch(
@@ -284,7 +284,8 @@ class Pix2Pix:
         # ground_truth = (((np.array(ground_truth) + 1) / 2) * 255).astype(np.uint8)
         ground_truth = np.array([[d["data"] for d in inner_array] for inner_array in np.array(ground_truth)])
         ground_truth = np.transpose(ground_truth, (0, 2, 3, 1))
-
+        ground_truth = ((ground_truth + 1) / 2 * 255).astype(np.uint8)
+        
         output = self.generator.predict(input_pred)
         generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 

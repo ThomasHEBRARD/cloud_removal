@@ -10,6 +10,7 @@ def closest_date(target_date, date_array):
     date_array = [datetime.strptime(date, '%Y%m%d') for date in date_array]
     closest_date = min(date_array, key=lambda x: abs(target - x))
     return closest_date.strftime('%Y%m%d')
+
 class DataLoader:
     def __init__(self, path=""):
         self.path = path

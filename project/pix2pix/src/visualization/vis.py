@@ -18,7 +18,7 @@ BATCH_SIZE = 3
 
 ################################
 
-savemode_data_loader = DataLoader(path="S1_32VNH_20200509_VV_402_538380_6274400_256")
+savemode_data_loader = DataLoader(path="S2_32VNH_20190927_B02_525_523020_6266720_256")
 bands = ["B04", "B03", "B02", "B08"]
 ground_truth, input = zip(
     *savemode_data_loader.load_batch(
@@ -33,6 +33,7 @@ input_pred = np.transpose(input_pred, (0, 2, 3, 1))
 # ground_truth = (((np.array(ground_truth) + 1) / 2) * 255).astype(np.uint8)
 ground_truth = np.array([[d["data"] for d in inner_array] for inner_array in np.array(ground_truth)])
 ground_truth = np.transpose(ground_truth, (0, 2, 3, 1))
+ground_truth = ((ground_truth + 1) / 2 * 255).astype(np.uint8)
 
 output = model.predict(input_pred)
 generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
@@ -83,7 +84,7 @@ for idx_img in range(1):
 
     fig1.savefig(f"vis/input.png")
 
-    with open(f"vis/input.txt", "a") as f:
+    with open(f"vis/input.txt", "w") as f:
         f.write(input_dict["s1_hv"]["desc"].split(".")[0] + "\n")
         f.write(input_dict["s1_vv"]["desc"].split(".")[0] + "\n")
         f.write(input_dict[f"s2_B02"]["desc"].split(".")[0] + "\n")
