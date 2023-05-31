@@ -18,7 +18,7 @@ BATCH_SIZE = 3
 
 ################################
 
-savemode_data_loader = DataLoader()
+savemode_data_loader = DataLoader(path="S1_32VNH_20200509_VV_402_538380_6274400_256")
 bands = ["B04", "B03", "B02", "B08"]
 ground_truth, input = zip(
     *savemode_data_loader.load_batch(

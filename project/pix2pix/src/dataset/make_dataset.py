@@ -1,11 +1,18 @@
 import os
 import json
 import numpy as np
+from datetime import datetime
 
 from osgeo import gdal
 
+def closest_date(target_date, date_array):
+    target = datetime.strptime(target_date, '%Y%m%d')
+    date_array = [datetime.strptime(date, '%Y%m%d') for date in date_array]
+    closest_date = min(date_array, key=lambda x: abs(target - x))
+    return closest_date.strftime('%Y%m%d')
 class DataLoader:
-    def __init__(self):
+    def __init__(self, path=""):
+        self.path = path
         with open(
             "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_train.json",
             "r",
@@ -36,6 +43,17 @@ class DataLoader:
         self.n_batches = int(len(list(keys)) / batch_size)
 
         os.chdir("/Users/thomashebrard/thesis/code/preprocess/")
+        
+        if self.path:
+            date = self.path.split("_")[2]
+            key = None
+            for k, v in self.dataset_test.items():
+                if date in v["s2_cloudy_B02"]:
+                    key = k
+            if key:
+                data_keys = [str(key)]
+            else:
+                print("no data")
 
         for k in data_keys:
             s1_hv = {"im": dataset[k]["s1_hv"], "data": gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()}
