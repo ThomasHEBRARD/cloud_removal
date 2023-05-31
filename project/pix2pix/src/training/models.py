@@ -31,7 +31,8 @@ class Pix2Pix:
         self.df = df
         self.img_rows = 256
         self.img_cols = 256
-        self.input_channels_generator = len(bands) + 6
+        # self.input_channels_generator = len(bands) + 6
+        self.input_channels_generator = len(bands) + 2
         self.input_channels_discriminator = 3
         self.output_channels = 3
 
