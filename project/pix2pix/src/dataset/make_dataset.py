@@ -25,7 +25,7 @@ class DataLoader:
         ) as f:
             self.dataset_test = json.load(f)
 
-        self.dataset_train_keys = list(self.dataset_train.keys())[:10000]
+        self.dataset_train_keys = list(self.dataset_train.keys())
 
     def load_batch(self, bands=["B04", "B03", "B02"], batch_size=1, is_testing=False):
         batched_data = []
@@ -91,7 +91,7 @@ class DataLoader:
             # scaled_s1_hv_m1 = ((s1_hv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
             # scaled_s1_vv_p1 = ((s1_vv_p1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
 
-            CLIP_MIN_S2, CLIP_MAX_S2 = 100, 5800
+            CLIP_MIN_S2, CLIP_MAX_S2 = 0, 3500
             for band in bands:
                 s2_cloudy[band]["data"] = np.clip(s2_cloudy[band]["data"], CLIP_MIN_S2, CLIP_MAX_S2)
                 s2_cloudy[band]["data"] = (s2_cloudy[band]["data"] - CLIP_MIN_S2) / (

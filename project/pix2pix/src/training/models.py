@@ -76,21 +76,21 @@ class Pix2Pix:
         self.combined = Model(inputs=[img_A, img_B], outputs=[valid, fake_A])
         
 
-        def carl_error(y_true, y_pred):
-            """Computes the Cloud-Adaptive Regularized Loss (CARL)"""
-            cloud_cloudshadow_mask = y_true[:, -1:, :, :]
-            clearmask = K.ones_like(y_true[:, -1:, :, :]) - y_true[:, -1:, :, :]
-            predicted = y_pred[:, 0:13, :, :]
-            input_cloudy = y_pred[:, -14:-1, :, :]
-            target = y_true[:, 0:13, :, :]
+        # def carl_error(y_true, y_pred):
+        #     """Computes the Cloud-Adaptive Regularized Loss (CARL)"""
+        #     cloud_cloudshadow_mask = y_true[:, -1:, :, :]
+        #     clearmask = K.ones_like(y_true[:, -1:, :, :]) - y_true[:, -1:, :, :]
+        #     predicted = y_pred[:, 0:13, :, :]
+        #     input_cloudy = y_pred[:, -14:-1, :, :]
+        #     target = y_true[:, 0:13, :, :]
 
-            cscmae = K.mean(clearmask * K.abs(predicted - input_cloudy) + cloud_cloudshadow_mask * K.abs(
-                predicted - target)) + 1.0 * K.mean(K.abs(predicted - target))
+        #     cscmae = K.mean(clearmask * K.abs(predicted - input_cloudy) + cloud_cloudshadow_mask * K.abs(
+        #         predicted - target)) + 1.0 * K.mean(K.abs(predicted - target))
 
-            return cscmae
+        #     return cscmae
         
         self.combined.compile(
-            loss=carl_error, loss_weights=[1, 100], optimizer=optimizer
+            loss=["mse", "mae"], loss_weights=[1, 100], optimizer=optimizer
         )
 
     def build_generator(self):
@@ -183,9 +183,13 @@ class Pix2Pix:
 
         return Model([img_A, img_B], validity)
 
-    def train(self, epochs, nb_batches_per_epoch=100, batch_size=1):
+    def train(self, epochs, nb_batches_per_epoch=100, batch_size=1, model_path=None):
         self.epochs = epochs
         start_time = datetime.datetime.now()
+        if model_path:
+            from keras.models import load_model
+            self.generator = load_model(model_path)
+            self.generator.compile(loss=["mse", "mae"], loss_weights=[1, 100], optimizer=Adam(self.lr, 0.5)) 
 
         # Adversarial loss ground truths
         valid = np.ones((batch_size,) + self.disc_patch)
@@ -285,7 +289,7 @@ class Pix2Pix:
         ground_truth = np.array([[d["data"] for d in inner_array] for inner_array in np.array(ground_truth)])
         ground_truth = np.transpose(ground_truth, (0, 2, 3, 1))
         ground_truth = ((ground_truth + 1) / 2 * 255).astype(np.uint8)
-        
+
         output = self.generator.predict(input_pred)
         generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 
@@ -340,7 +344,10 @@ class Pix2Pix:
                 with open(f"{file_dir}/model_epoch_{epoch}/input.txt", "a") as f:
                     f.write(input_dict["s1_hv"]["desc"].split(".")[0] + "\n")
                     f.write(input_dict["s1_vv"]["desc"].split(".")[0] + "\n")
-                    f.write(input_dict[f"s2_B02"]["desc"].split(".")[0] + "\n")
+                    try:
+                        f.write(input_dict[f"s2_B02"]["desc"].split(".")[0] + "\n")
+                    except:
+                        pass
 
             else:
                 directory = (
@@ -360,19 +367,19 @@ class Pix2Pix:
             fig2.suptitle(
                 f"Epoch : {epoch}/{self.epochs}, lr: {self.lr}, g_loss: {round(g_loss, 2)}, d_loss: {round(d_loss, 2)}, accuracy: {round(accuracy, 2)}%"
             )
+            if "s2_B02" in input_dict or "s2_B03" in input_dict or "s2_B04" in input_dict:
+                cloudy_input = np.stack(
+                    (
+                        input_dict[f"s2_B04"]["image"][idx_img],
+                        input_dict[f"s2_B03"]["image"][idx_img],
+                        input_dict[f"s2_B02"]["image"][idx_img],
+                    ),
+                    axis=-1,
+                )
 
-            cloudy_input = np.stack(
-                (
-                    input_dict[f"s2_B04"]["image"][idx_img],
-                    input_dict[f"s2_B03"]["image"][idx_img],
-                    input_dict[f"s2_B02"]["image"][idx_img],
-                ),
-                axis=-1,
-            )
-
-            axes2[0].imshow(cloudy_input)
-            axes2[0].set_title(f"Sentinel-2 Cloudy Input")
-            axes2[0].axis("off")
+                axes2[0].imshow(cloudy_input)
+                axes2[0].set_title(f"Sentinel-2 Cloudy Input")
+                axes2[0].axis("off")
 
             axes2[1].imshow(generated_image[idx_img])
             axes2[1].set_title(f"Generated Output")

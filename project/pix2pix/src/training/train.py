@@ -17,4 +17,5 @@ model.train(
     epochs=config["epochs"],
     nb_batches_per_epoch=config["nb_batches_per_epoch"],
     batch_size=config["batch_size"],
+    model_path=config["model_path"]
 )
