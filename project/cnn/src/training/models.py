@@ -92,45 +92,78 @@ lr = 0.0001
 model.compile(optimizer=Adam(lr, 0.5), loss='mse', metrics=['accuracy'])
 
 checkpoint = ModelCheckpoint('m/model-{epoch:03d}.h5', period=save_every_epochs)
+
+# class ImageCallback(Callback):
+#     def __init__(self, input_image, ground_truth_image, output_dir):
+#         super().__init__()
+#         self.input_image = input_image
+#         self.ground_truth_image = ground_truth_image
+#         self.output_dir = output_dir
+
+#     def on_epoch_end(self, epoch, logs=None):
+#         prediction = self.model.predict(self.input_image)
+
+#         # Select the first image from input, ground truth, and prediction
+#         input_image = self.input_image[0]
+#         ground_truth_image = ((self.ground_truth_image[0] + 1) / 2 * 255).astype(np.uint8) 
+        
+#         prediction_image = ((prediction[0] + 1) / 2 * 255).astype(np.uint8)
+
+#         # Plot input image
+#         plt.figure(figsize=(15, 5))
+#         plt.subplot(1, 3, 1)
+#         plt.title('Input')
+#         plt.imshow(((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8))
+#         plt.axis('off')
+
+#         # Plot ground truth image
+#         plt.subplot(1, 3, 2)
+#         plt.title('Ground Truth')
+#         plt.imshow(ground_truth_image)
+#         plt.axis('off')
+
+#         # Plot predicted image
+#         plt.subplot(1, 3, 3)
+#         plt.title('Prediction')
+#         plt.imshow(prediction_image)
+#         plt.axis('off')
+
+#         # Save the figure
+#         plt.savefig(f'{self.output_dir}/image_at_epoch_{epoch+1}.png')
+#         plt.close()
+
 class ImageCallback(Callback):
-    def __init__(self, input_image, ground_truth_image, output_dir):
+    def __init__(self, input_images, ground_truth_images, output_dir):
         super().__init__()
-        self.input_image = input_image
-        self.ground_truth_image = ground_truth_image
+        self.input_images = input_images
+        self.ground_truth_images = ground_truth_images
         self.output_dir = output_dir
 
     def on_epoch_end(self, epoch, logs=None):
-        prediction = self.model.predict(self.input_image)
+        predictions = self.model.predict(self.input_images)
 
-        # Select the first image from input, ground truth, and prediction
-        input_image = self.input_image[0]
-        ground_truth_image = ((self.ground_truth_image[0] + 1) / 2 * 255).astype(np.uint8) 
-        
-        prediction_image = ((prediction[0] + 1) / 2 * 255).astype(np.uint8)
+        fig, axs = plt.subplots(10, 3, figsize=(15, 50))
 
-        # Plot input image
-        plt.figure(figsize=(15, 5))
-        plt.subplot(1, 3, 1)
-        plt.title('Input')
-        plt.imshow(((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8))
-        plt.axis('off')
+        for i, (input_image, ground_truth_image, prediction) in enumerate(zip(self.input_images, self.ground_truth_images, predictions)):
+            prediction_image = ((prediction + 1) / 2 * 255).astype(np.uint8)
+            input_image = ((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8)
 
-        # Plot ground truth image
-        plt.subplot(1, 3, 2)
-        plt.title('Ground Truth')
-        plt.imshow(ground_truth_image)
-        plt.axis('off')
+            axs[i, 0].imshow(input_image)
+            axs[i, 0].set_title('Input')
+            axs[i, 0].axis('off')
 
-        # Plot predicted image
-        plt.subplot(1, 3, 3)
-        plt.title('Prediction')
-        plt.imshow(prediction_image)
-        plt.axis('off')
+            axs[i, 1].imshow(ground_truth_image)
+            axs[i, 1].set_title('Ground Truth')
+            axs[i, 1].axis('off')
 
-        # Save the figure
-        plt.savefig(f'{self.output_dir}/image_at_epoch_{epoch+1}.png')
-        plt.close()
+            axs[i, 2].imshow(prediction_image)
+            axs[i, 2].set_title('Prediction')
+            axs[i, 2].axis('off')
 
+        plt.tight_layout()
+        plt.savefig(f'{self.output_dir}/images_at_epoch_{epoch+1}.png')
+        plt.close(fig)
+  
 data_loader = DataLoader()
 imgs_A, imgs_B = zip( 
     *data_loader.load_batch(

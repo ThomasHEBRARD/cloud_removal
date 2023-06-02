@@ -15,12 +15,12 @@ class DataLoader:
     def __init__(self, path=""):
         self.path = path
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_train.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_train.json",
             "r",
         ) as f:
             self.dataset_train = json.load(f)
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_test.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_test.json",
             "r",
         ) as f:
             self.dataset_test = json.load(f)
@@ -60,10 +60,6 @@ class DataLoader:
         for k in data_keys:
             s1_hv = {"im": dataset[k]["s1_hv"], "data": gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()}
             s1_vv = {"im": dataset[k]["s1_vv"], "data": gdal.Open(dataset[k]["s1_vv"]).ReadAsArray()}
-            # s1_hv_p1 = {"im": dataset[k]["s1_hv_+1"], "data": gdal.Open(dataset[k]["s1_hv_+1"]).ReadAsArray()}
-            # s1_vv_m1 = {"im": dataset[k]["s1_vv_-1"], "data": gdal.Open(dataset[k]["s1_vv_-1"]).ReadAsArray()}
-            # s1_hv_m1 = {"im": dataset[k]["s1_hv_-1"], "data": gdal.Open(dataset[k]["s1_hv_-1"]).ReadAsArray()}
-            # s1_vv_p1 = {"im": dataset[k]["s1_vv_+1"], "data": gdal.Open(dataset[k]["s1_vv_+1"]).ReadAsArray()}
 
             s2_cloudy = {
                 band: {"im": dataset[k][f"s2_cloudy_{band}"], "data": gdal.Open(dataset[k][f"s2_cloudy_{band}"]).ReadAsArray()}
@@ -79,18 +75,9 @@ class DataLoader:
 
             s1_hv["data"] = np.clip(s1_hv["data"], CLIP_MIN_S1, CLIP_MAX_S1)
             s1_vv["data"] = np.clip(s1_vv["data"], CLIP_MIN_S1, CLIP_MAX_S1)
-            # s1_hv_p1 = np.clip(s1_hv_p1, CLIP_MIN_S1, CLIP_MAX_S1)
-            # s1_vv_m1 = np.clip(s1_vv_m1, CLIP_MIN_S1, CLIP_MAX_S1)
-            # s1_hv_m1 = np.clip(s1_hv_m1, CLIP_MIN_S1, CLIP_MAX_S1)
-            # s1_vv_p1 = np.clip(s1_vv_p1, CLIP_MIN_S1, CLIP_MAX_S1)
-            
 
             s1_hv["data"] = ((s1_hv["data"] - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
             s1_vv["data"] = ((s1_vv["data"] - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            # scaled_s1_hv_p1 = ((s1_hv_p1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            # scaled_s1_vv_m1 = ((s1_vv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            # scaled_s1_hv_m1 = ((s1_hv_m1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
-            # scaled_s1_vv_p1 = ((s1_vv_p1 - CLIP_MIN_S1) / (CLIP_MAX_S1 - CLIP_MIN_S1) * 2) - 1
 
             CLIP_MIN_S2, CLIP_MAX_S2 = 0, 3500
             for band in bands:
@@ -115,10 +102,6 @@ class DataLoader:
                 (
                     s1_hv,
                     s1_vv,
-                    # scaled_s1_hv_p1,
-                    # scaled_s1_vv_m1,
-                    # scaled_s1_hv_m1,
-                    # scaled_s1_vv_p1,
                     s2_cloudy["B04"],
                     s2_cloudy["B03"],
                     s2_cloudy["B02"],
