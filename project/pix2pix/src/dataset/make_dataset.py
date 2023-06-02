@@ -26,6 +26,7 @@ class DataLoader:
             self.dataset_test = json.load(f)
 
         self.dataset_train_keys = list(self.dataset_train.keys())
+        print(len(self.dataset_train_keys))
 
     def load_batch(self, bands=["B04", "B03", "B02"], batch_size=1, is_testing=False):
         batched_data = []
@@ -69,7 +70,7 @@ class DataLoader:
                 for band in bands
             }
             s2_cloudfree = {
-                band:  {"im": dataset[k][f"s2_cloud_free_{band}"], "data": gdal.Open(dataset[k][f"s2_cloud_free_{band}"]).ReadAsArray()}
+                band: {"im": dataset[k][f"s2_cloud_free_{band}"], "data": gdal.Open(dataset[k][f"s2_cloud_free_{band}"]).ReadAsArray()}
                 for band in ["B04", "B03", "B02"]
             }
 

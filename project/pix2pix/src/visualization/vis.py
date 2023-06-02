@@ -10,8 +10,8 @@ sys.path.append("..")
 from src.training.models import Pix2Pix
 from src.dataset.make_dataset import DataLoader
 
-epoch = 95
-start = "run_2023-05-31T17:39:21"
+epoch = 190
+start = "DO_NOT_DELETE"
 model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
 BATCH_SIZE = 3
@@ -19,7 +19,7 @@ BATCH_SIZE = 3
 ################################
 
 savemode_data_loader = DataLoader(path="S2_32VNH_20190927_B02_525_523020_6266720_256")
-bands = ["B04", "B03", "B02", "B08"]
+bands = ["B04", "B03", "B02"]
 ground_truth, input = zip(
     *savemode_data_loader.load_batch(
         bands=bands, batch_size=1, is_testing=True

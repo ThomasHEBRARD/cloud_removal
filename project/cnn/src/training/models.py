@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 sys.path.append(".")
 sys.path.append("..")
 
+from keras.layers import Input, Dropout, Concatenate
+from keras.layers import BatchNormalization
+from keras.layers import LeakyReLU
+from keras.optimizers import Adam
 from src.dataset.make_dataset import DataLoader
 
 from keras.models import Model
@@ -13,58 +17,66 @@ from keras.layers import Input, Conv2D, MaxPooling2D, Dropout, UpSampling2D, con
 
 BANDS = ["B04", "B03", "B02", "B08"]
 
-def build_unet(input_shape=(256, 256, 6), output_channels=3):
-    inputs = Input(input_shape)
+def build_generator(input_channel):
+    """U-Net Generator"""
+    gf = 64
 
-    # Contracting Path
-    conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
-    conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv1)
-    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+    def conv2d(layer_input, filters, f_size=4, bn=True):
+        """Layers used during downsampling"""
+        d = Conv2D(filters, kernel_size=f_size, strides=2, padding="same")(
+            layer_input
+        )
+        d = LeakyReLU(alpha=0.2)(d)
+        if bn:
+            d = BatchNormalization(momentum=0.8)(d)
+        return d
 
-    conv2 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool1)
-    conv2 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv2)
-    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    def deconv2d(layer_input, skip_input, filters, f_size=4, dropout_rate=0):
+        """Layers used during upsampling"""
+        u = UpSampling2D(size=2)(layer_input)
+        u = Conv2D(
+            filters,
+            kernel_size=f_size,
+            strides=1,
+            padding="same",
+            activation="relu",
+        )(u)
+        if dropout_rate:
+            u = Dropout(dropout_rate)(u)
+        u = BatchNormalization(momentum=0.8)(u)
+        u = Concatenate()([u, skip_input])
+        return u
 
-    conv3 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool2)
-    conv3 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv3)
-    pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+    # Image input
+    d0 = Input(shape=(256, 256, input_channel))
 
-    conv4 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool3)
-    conv4 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv4)
-    drop4 = Dropout(0.5)(conv4)
-    pool4 = MaxPooling2D(pool_size=(2, 2))(drop4)
+    # Downsampling
+    d1 = conv2d(d0, gf, bn=False)
+    d2 = conv2d(d1, gf * 2)
+    d3 = conv2d(d2, gf * 4)
+    d4 = conv2d(d3, gf * 8)
+    d5 = conv2d(d4, gf * 8)
+    d6 = conv2d(d5, gf * 8)
+    d7 = conv2d(d6, gf * 8)
 
-    conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool4)
-    conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv5)
-    drop5 = Dropout(0.5)(conv5)
+    # Upsampling
+    u1 = deconv2d(d7, d6, gf * 8)
+    u2 = deconv2d(u1, d5, gf * 8)
+    u3 = deconv2d(u2, d4, gf * 8)
+    u4 = deconv2d(u3, d3, gf * 4)
+    u5 = deconv2d(u4, d2, gf * 2)
+    u6 = deconv2d(u5, d1, gf)
 
-    # Expanding Path
-    up6 = Conv2D(512, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(drop5))
-    merge6 = concatenate([drop4, up6], axis = 3)
-    conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge6)
-    conv6 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv6)
+    u7 = UpSampling2D(size=2)(u6)
+    output_img = Conv2D(
+        3,
+        kernel_size=4,
+        strides=1,
+        padding="same",
+        activation="tanh",
+    )(u7)
 
-    up7 = Conv2D(256, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv6))
-    merge7 = concatenate([conv3, up7], axis = 3)
-    conv7 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge7)
-    conv7 = Conv2D(256, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv7)
-
-    up8 = Conv2D(128, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv7))
-    merge8 = concatenate([conv2, up8], axis = 3)
-    conv8 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge8)
-    conv8 = Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv8)
-
-    up9 = Conv2D(64, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv8))
-    merge9 = concatenate([conv1, up9], axis = 3)
-    conv9 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(merge9)
-    conv9 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
-    conv9 = Conv2D(2, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
-
-    conv10 = Conv2D(output_channels, 1, activation = 'sigmoid')(conv9)
-
-    model = Model(inputs = inputs, outputs = conv10)
-
-    return model
+    return Model(d0, output_img)
 
 # Calculate 5% of total epochs
 total_epochs = 100
@@ -74,31 +86,60 @@ save_every_epochs = total_epochs // 20  # Integer division
 ##############################################################################################
 ##############################################################################################
 
-model = build_unet(input_shape=(256, 256, 6), output_channels=3)
-
+model = build_generator(input_channel=6)
+lr = 0.0001
 # Compile the model
-model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
+model.compile(optimizer=Adam(lr, 0.5), loss='mse', metrics=['accuracy'])
 
 checkpoint = ModelCheckpoint('m/model-{epoch:03d}.h5', period=save_every_epochs)
 class ImageCallback(Callback):
-    def __init__(self, input_image, output_dir):
+    def __init__(self, input_image, ground_truth_image, output_dir):
         super().__init__()
         self.input_image = input_image
+        self.ground_truth_image = ground_truth_image
         self.output_dir = output_dir
 
     def on_epoch_end(self, epoch, logs=None):
         prediction = self.model.predict(self.input_image)
-        plt.imsave(f'{self.output_dir}/image_at_epoch_{epoch+1}.png', ((prediction[0] + 1) / 2 * 255).astype(np.uint8))
+
+        # Select the first image from input, ground truth, and prediction
+        input_image = self.input_image[0]
+        ground_truth_image = ((self.ground_truth_image[0] + 1) / 2 * 255).astype(np.uint8) 
+        
+        prediction_image = ((prediction[0] + 1) / 2 * 255).astype(np.uint8)
+
+        # Plot input image
+        plt.figure(figsize=(15, 5))
+        plt.subplot(1, 3, 1)
+        plt.title('Input')
+        plt.imshow(((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8))
+        plt.axis('off')
+
+        # Plot ground truth image
+        plt.subplot(1, 3, 2)
+        plt.title('Ground Truth')
+        plt.imshow(ground_truth_image)
+        plt.axis('off')
+
+        # Plot predicted image
+        plt.subplot(1, 3, 3)
+        plt.title('Prediction')
+        plt.imshow(prediction_image)
+        plt.axis('off')
+
+        # Save the figure
+        plt.savefig(f'{self.output_dir}/image_at_epoch_{epoch+1}.png')
+        plt.close()
 
 data_loader = DataLoader()
 imgs_A, imgs_B = zip( 
     *data_loader.load_batch(
-        bands=["B04", "B03", "B02", "B08"], batch_size=200
+        bands=["B04", "B03", "B02", "B08"], batch_size=500
     )
 )
 
 imgs_A, imgs_B = np.array(imgs_A), np.array(imgs_B)
-callback = ImageCallback(imgs_B[:10, :, :, :], 'output_images')
+callback = ImageCallback(imgs_B[:10, :, :, :], imgs_A[:10, :, :, :], 'output_images')
 
 val_A, val_B = imgs_A[:10,:,:,:], imgs_B[:10,:,:,:]
 

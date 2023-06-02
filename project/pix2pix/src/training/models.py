@@ -75,20 +75,6 @@ class Pix2Pix:
 
         self.combined = Model(inputs=[img_A, img_B], outputs=[valid, fake_A])
         
-
-        # def carl_error(y_true, y_pred):
-        #     """Computes the Cloud-Adaptive Regularized Loss (CARL)"""
-        #     cloud_cloudshadow_mask = y_true[:, -1:, :, :]
-        #     clearmask = K.ones_like(y_true[:, -1:, :, :]) - y_true[:, -1:, :, :]
-        #     predicted = y_pred[:, 0:13, :, :]
-        #     input_cloudy = y_pred[:, -14:-1, :, :]
-        #     target = y_true[:, 0:13, :, :]
-
-        #     cscmae = K.mean(clearmask * K.abs(predicted - input_cloudy) + cloud_cloudshadow_mask * K.abs(
-        #         predicted - target)) + 1.0 * K.mean(K.abs(predicted - target))
-
-        #     return cscmae
-        
         self.combined.compile(
             loss=["mse", "mae"], loss_weights=[1, 100], optimizer=optimizer
         )

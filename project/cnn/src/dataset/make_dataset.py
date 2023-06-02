@@ -7,17 +7,17 @@ from osgeo import gdal
 class DataLoader:
     def __init__(self):
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_train.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_filtered_train.json",
             "r",
         ) as f:
             self.dataset_train = json.load(f)
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_test.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_filtered_test.json",
             "r",
         ) as f:
             self.dataset_test = json.load(f)
 
-        self.dataset_train_keys = list(self.dataset_train.keys())[:10000]
+        self.dataset_train_keys = list(self.dataset_train.keys())
 
     def load_batch(self, bands=["B04", "B03", "B02"], batch_size=1, is_testing=False):
         batched_data = []
@@ -36,8 +36,10 @@ class DataLoader:
         self.n_batches = int(len(list(keys)) / batch_size)
 
         os.chdir("/Users/thomashebrard/thesis/code/preprocess/")
-
+        i = 0
         for k in data_keys:
+            print(i)
+            i+=1
             s1_hv = gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()
             s1_vv = gdal.Open(dataset[k]["s1_vv"]).ReadAsArray()
 
