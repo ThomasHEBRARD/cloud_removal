@@ -154,7 +154,7 @@ class LossHistory(Callback):
 
     def on_epoch_end(self, epoch, logs={}):
         with open(f"models/{RUN_NAME}/loss_log.txt", "a") as f:
-            f.write('{},{},{},{}\n'.format(epoch, logs.get('loss'), logs.get('val_loss'), logs.get('accuracy'), logs.get('val_accuracy')))
+            f.write('{},{},{},{},{}\n'.format(epoch, logs.get('loss'), logs.get('val_loss'), logs.get('accuracy'), logs.get('val_accuracy')))
 
 # Initialize the callback
 history = LossHistory()

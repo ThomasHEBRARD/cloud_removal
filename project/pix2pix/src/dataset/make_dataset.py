@@ -5,12 +5,6 @@ from datetime import datetime
 
 from osgeo import gdal
 
-def closest_date(target_date, date_array):
-    target = datetime.strptime(target_date, '%Y%m%d')
-    date_array = [datetime.strptime(date, '%Y%m%d') for date in date_array]
-    closest_date = min(date_array, key=lambda x: abs(target - x))
-    return closest_date.strftime('%Y%m%d')
-
 class DataLoader:
     def __init__(self, path=""):
         self.path = path
@@ -28,7 +22,7 @@ class DataLoader:
         self.dataset_train_keys = list(self.dataset_train.keys())
         print(len(self.dataset_train_keys))
 
-    def load_batch(self, bands=["B04", "B03", "B02"], batch_size=1, is_testing=False):
+    def load_batch(self, bands=["B04", "B03", "B02", "B08"], batch_size=1, is_testing=False):
         batched_data = []
         dataset = {}
         if is_testing:
