@@ -7,12 +7,12 @@ from osgeo import gdal
 class DataLoader:
     def __init__(self):
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_filtered_train.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_train.json",
             "r",
         ) as f:
             self.dataset_train = json.load(f)
         with open(
-            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_filtered_water_filtered_test.json",
+            "/Users/thomashebrard/thesis/code/preprocess/data/dataset_test.json",
             "r",
         ) as f:
             self.dataset_test = json.load(f)

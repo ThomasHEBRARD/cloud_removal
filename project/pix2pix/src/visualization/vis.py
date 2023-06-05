@@ -13,12 +13,14 @@ from src.dataset.make_dataset import DataLoader
 epoch = 190
 start = "DO_NOT_DELETE"
 model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
+# model = load_model(f"/Users/thomashebrard/thesis/code/project/cnn/m/model-080.h5")
+
 
 BATCH_SIZE = 3
 
 ################################
 
-savemode_data_loader = DataLoader(path="S2_32VNH_20190927_B02_525_523020_6266720_256")
+savemode_data_loader = DataLoader(path="S2_32VNH_20210830_B02_1734_535820_6195040_256")
 bands = ["B04", "B03", "B02"]
 ground_truth, input = zip(
     *savemode_data_loader.load_batch(

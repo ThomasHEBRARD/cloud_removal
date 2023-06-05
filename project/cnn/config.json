@@ -1,0 +1,8 @@
+{
+    "epochs": 500,
+    "lr": 0.001,
+    "batch_size": 1000,
+    "nb_batches_per_epoch": 10,
+    "model_path": "",
+    "loss": "mse"
+}

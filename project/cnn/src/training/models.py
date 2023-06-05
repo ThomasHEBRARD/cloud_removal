@@ -1,4 +1,6 @@
+import os
 import sys
+import json
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,9 +15,24 @@ from src.dataset.make_dataset import DataLoader
 
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint, Callback
-from keras.layers import Input, Conv2D, MaxPooling2D, Dropout, UpSampling2D, concatenate
+from keras.layers import Input, Conv2D, Dropout, UpSampling2D, concatenate
 
 BANDS = ["B04", "B03", "B02", "B08"]
+
+with open("config.json", "r") as file:
+    config = json.load(file)
+
+RUN_NAME = ','.join(f'{k}={v}' for k, v in config.items())
+
+OVERRIDE = False
+
+if not os.path.exists(f"models/{RUN_NAME}"):
+    os.makedirs(f"models/{RUN_NAME}")
+else:
+    if not OVERRIDE:
+        print("RUN ALREADY DONE")
+        sys.exit()
+
 
 def build_generator(input_channel):
     """U-Net Generator"""
@@ -87,50 +104,10 @@ save_every_epochs = total_epochs // 20  # Integer division
 ##############################################################################################
 
 model = build_generator(input_channel=6)
-lr = 0.0001
 # Compile the model
-model.compile(optimizer=Adam(lr, 0.5), loss='mse', metrics=['accuracy'])
+model.compile(optimizer=Adam(config["lr"], 0.5), loss=config["loss"], metrics=['accuracy'])
 
-checkpoint = ModelCheckpoint('m/model-{epoch:03d}.h5', period=save_every_epochs)
-
-# class ImageCallback(Callback):
-#     def __init__(self, input_image, ground_truth_image, output_dir):
-#         super().__init__()
-#         self.input_image = input_image
-#         self.ground_truth_image = ground_truth_image
-#         self.output_dir = output_dir
-
-#     def on_epoch_end(self, epoch, logs=None):
-#         prediction = self.model.predict(self.input_image)
-
-#         # Select the first image from input, ground truth, and prediction
-#         input_image = self.input_image[0]
-#         ground_truth_image = ((self.ground_truth_image[0] + 1) / 2 * 255).astype(np.uint8) 
-        
-#         prediction_image = ((prediction[0] + 1) / 2 * 255).astype(np.uint8)
-
-#         # Plot input image
-#         plt.figure(figsize=(15, 5))
-#         plt.subplot(1, 3, 1)
-#         plt.title('Input')
-#         plt.imshow(((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8))
-#         plt.axis('off')
-
-#         # Plot ground truth image
-#         plt.subplot(1, 3, 2)
-#         plt.title('Ground Truth')
-#         plt.imshow(ground_truth_image)
-#         plt.axis('off')
-
-#         # Plot predicted image
-#         plt.subplot(1, 3, 3)
-#         plt.title('Prediction')
-#         plt.imshow(prediction_image)
-#         plt.axis('off')
-
-#         # Save the figure
-#         plt.savefig(f'{self.output_dir}/image_at_epoch_{epoch+1}.png')
-#         plt.close()
+checkpoint = ModelCheckpoint(f'models/{RUN_NAME}/'+'model-{epoch:03d}.h5', period=save_every_epochs)
 
 class ImageCallback(Callback):
     def __init__(self, input_images, ground_truth_images, output_dir):
@@ -143,37 +120,57 @@ class ImageCallback(Callback):
         predictions = self.model.predict(self.input_images)
 
         fig, axs = plt.subplots(10, 3, figsize=(15, 50))
-
+        c = 1
         for i, (input_image, ground_truth_image, prediction) in enumerate(zip(self.input_images, self.ground_truth_images, predictions)):
+            if c == 30:
+                break
             prediction_image = ((prediction + 1) / 2 * 255).astype(np.uint8)
             input_image = ((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8)
+            ground_truth_image = ((ground_truth_image + 1) / 2 * 255).astype(np.uint8) 
 
             axs[i, 0].imshow(input_image)
             axs[i, 0].set_title('Input')
             axs[i, 0].axis('off')
 
-            axs[i, 1].imshow(ground_truth_image)
-            axs[i, 1].set_title('Ground Truth')
-            axs[i, 1].axis('off')
-
-            axs[i, 2].imshow(prediction_image)
-            axs[i, 2].set_title('Prediction')
+            axs[i, 2].imshow(ground_truth_image)
+            axs[i, 2].set_title('Ground Truth')
             axs[i, 2].axis('off')
+
+            axs[i, 1].imshow(prediction_image)
+            axs[i, 1].set_title('Prediction')
+            axs[i, 1].axis('off')
+            c+=1
 
         plt.tight_layout()
         plt.savefig(f'{self.output_dir}/images_at_epoch_{epoch+1}.png')
         plt.close(fig)
-  
+        
+class LossHistory(Callback):
+    def on_train_begin(self, logs={}):
+        self.losses = []
+        self.val_losses = []
+        self.acc = []
+        self.val_acc = []
+
+
+    def on_epoch_end(self, epoch, logs={}):
+        with open(f"models/{RUN_NAME}/loss_log.txt", "a") as f:
+            f.write('{},{},{},{}\n'.format(epoch, logs.get('loss'), logs.get('val_loss'), logs.get('accuracy'), logs.get('val_accuracy')))
+
+# Initialize the callback
+history = LossHistory()
+
 data_loader = DataLoader()
 imgs_A, imgs_B = zip( 
     *data_loader.load_batch(
-        bands=["B04", "B03", "B02", "B08"], batch_size=500
+        bands=BANDS, batch_size=config["batch_size"]
     )
 )
 
-imgs_A, imgs_B = np.array(imgs_A), np.array(imgs_B)
-callback = ImageCallback(imgs_B[:10, :, :, :], imgs_A[:10, :, :, :], 'output_images')
+imgs_B, imgs_A = np.array(imgs_B), np.array(imgs_A)
 
-val_A, val_B = imgs_A[:10,:,:,:], imgs_B[:10,:,:,:]
+callback = ImageCallback(imgs_B, imgs_A, f"models/{RUN_NAME}")
 
-model.fit(imgs_B, imgs_A, epochs=total_epochs, batch_size=10, callbacks=[checkpoint, callback], validation_data=(val_B, val_A))
+val_A, val_B = imgs_A[:10,:,: ,:], imgs_B[:10,:,:,:]
+
+model.fit(imgs_B, imgs_A, steps_per_epoch=config["nb_batches_per_epoch"], epochs=total_epochs, callbacks=[checkpoint, callback, history], validation_data=(val_B, val_A))
