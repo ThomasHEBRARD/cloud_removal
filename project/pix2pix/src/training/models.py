@@ -19,11 +19,25 @@ sys.path.append("..")
 
 from src.dataset.make_dataset import DataLoader
 
+with open("config.json", "r") as file:
+    config = json.load(file)
+
+RUN_NAME = ','.join(f'{k}={v}' for k, v in config.items())
+
+OVERRIDE = True
+
+if not os.path.exists(f"models/{RUN_NAME}"):
+    os.makedirs(f"models/{RUN_NAME}")
+else:
+    if not OVERRIDE:
+        print("RUN ALREADY DONE")
+        sys.exit()
 
 class Pix2Pix:
     def __init__(
-        self, bands=["B02", "B03", "B04"], lr=0.0002, gf=64, df=64, train=False
+        self, bands=["B02", "B03", "B04", "B08"], lr=0.0002, gf=64, df=64, train=False
     ):
+        
         # Input shape
         self.bands = bands
         self.lr = lr
@@ -239,7 +253,7 @@ class Pix2Pix:
             )
 
     def save_model(self, epoch, d_loss, g_loss, accuracy, start_time, save=False):
-        file_dir = f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}"
+        file_dir = f"models/{RUN_NAME}"
         os.makedirs(file_dir, exist_ok=True)
 
         with open(f"{file_dir}/d_loss.txt", "a") as f:
@@ -325,7 +339,7 @@ class Pix2Pix:
 
             if save:
                 fig1.savefig(
-                    f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/input.png"
+                    f"models/{RUN_NAME}/model_epoch_{epoch}/input.png"
                 )
                 with open(f"{file_dir}/model_epoch_{epoch}/input.txt", "a") as f:
                     f.write(input_dict["s1_hv"]["desc"].split(".")[0] + "\n")
@@ -337,12 +351,12 @@ class Pix2Pix:
 
             else:
                 directory = (
-                    f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/"
+                    f"vis/{RUN_NAME}/epoch_{epoch}/"
                 )
                 if not os.path.exists(directory):
                     os.makedirs(directory)
                 fig1.savefig(
-                    f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/input.png"
+                    f"vis/{RUN_NAME}/epoch_{epoch}/input.png"
                 )
 
             #####################################
@@ -379,11 +393,11 @@ class Pix2Pix:
 
             if save:
                 fig2.savefig(
-                    f"models/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/model_epoch_{epoch}/result.png"
+                    f"models/{RUN_NAME}/model_epoch_{epoch}/result.png"
                 )
             else:
                 fig2.savefig(
-                    f"vis/run_{start_time.strftime('%Y-%m-%dT%H:%M:%S')}/epoch_{epoch}/result.png"
+                    f"vis/{RUN_NAME}/epoch_{epoch}/result.png"
                 )
 
             plt.close()
