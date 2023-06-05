@@ -24,7 +24,7 @@ with open("config.json", "r") as file:
 
 RUN_NAME = ','.join(f'{k}={v}' for k, v in config.items())
 
-OVERRIDE = False
+OVERRIDE = True
 
 if not os.path.exists(f"models/{RUN_NAME}"):
     os.makedirs(f"models/{RUN_NAME}")
@@ -120,13 +120,13 @@ class ImageCallback(Callback):
         predictions = self.model.predict(self.input_images)
 
         fig, axs = plt.subplots(10, 3, figsize=(15, 50))
-        c = 1
+
         for i, (input_image, ground_truth_image, prediction) in enumerate(zip(self.input_images, self.ground_truth_images, predictions)):
-            if c == 30:
+            if i > 9:
                 break
             prediction_image = ((prediction + 1) / 2 * 255).astype(np.uint8)
             input_image = ((input_image[:,:,2:5] + 1) / 2 * 255).astype(np.uint8)
-            ground_truth_image = ((ground_truth_image + 1) / 2 * 255).astype(np.uint8) 
+            ground_truth_image = (ground_truth_image*255).astype(np.uint8)
 
             axs[i, 0].imshow(input_image)
             axs[i, 0].set_title('Input')
@@ -139,7 +139,6 @@ class ImageCallback(Callback):
             axs[i, 1].imshow(prediction_image)
             axs[i, 1].set_title('Prediction')
             axs[i, 1].axis('off')
-            c+=1
 
         plt.tight_layout()
         plt.savefig(f'{self.output_dir}/images_at_epoch_{epoch+1}.png')
