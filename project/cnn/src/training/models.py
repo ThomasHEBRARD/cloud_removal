@@ -34,7 +34,7 @@ else:
         sys.exit()
 
 
-def build_generator(input_channel):
+def build_unet(input_channel):
     """U-Net Generator"""
     gf = 64
 
@@ -103,7 +103,7 @@ save_every_epochs = total_epochs // 20  # Integer division
 ##############################################################################################
 ##############################################################################################
 
-model = build_generator(input_channel=6)
+model = build_unet(input_channel=6)
 # Compile the model
 model.compile(optimizer=Adam(config["lr"], 0.5), loss=config["loss"], metrics=['accuracy'])
 

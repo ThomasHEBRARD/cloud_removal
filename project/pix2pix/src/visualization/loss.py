@@ -1,7 +1,9 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 
-path =  "models/run_2023-06-01T00:22:32/"
+run_name = "epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path="
+
+path = f"models/{run_name}/"
 d_loss_path = f"{path}d_loss.txt"
 g_loss_path = f"{path}g_loss.txt"
 

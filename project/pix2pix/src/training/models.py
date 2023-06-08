@@ -273,7 +273,7 @@ class Pix2Pix:
                     config = json.load(conf)
                     json.dump(config, f)
 
-        savemode_data_loader = DataLoader(path="S2_32VNH_20190927_B02_525_523020_6266720_256")
+        savemode_data_loader = DataLoader(path="S2_32VNH_20200504_B12_929_566540_6243680_256")
 
         ground_truth, input = zip(
             *savemode_data_loader.load_batch(

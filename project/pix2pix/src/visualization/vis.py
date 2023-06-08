@@ -11,20 +11,23 @@ from src.training.models import Pix2Pix
 from src.dataset.make_dataset import DataLoader
 
 epoch = 190
-start = "DO_NOT_DELETE"
-model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
-# model = load_model(f"/Users/thomashebrard/thesis/code/project/cnn/m/model-080.h5")
+start = "epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path="
+# model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
+model = load_model(f"/Users/thomashebrard/thesis/code/project/cnn/m/model-100.h5")
+# model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
-
-BATCH_SIZE = 3
+models_bands = [
+    (f"/Users/thomashebrard/thesis/code/project/cnn/m/model-100.h5", ["B04", "B03", "B02", "B08"], "unet"),
+    (f"models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_{475}/model_epoch_{475}.h5", ["B04", "B03", "B02", "B08"], "gan"),
+    (f"models/DO_NOT_DELETE/model_epoch_{190}/model_epoch_{190}.h5", ["B04", "B03", "B02"], "first_gan")
+]
 
 ################################
-
-savemode_data_loader = DataLoader(path="S2_32VNH_20210830_B02_1734_535820_6195040_256")
-bands = ["B04", "B03", "B02"]
+BATCH_SIZE = 3
+savemode_data_loader = DataLoader()
 ground_truth, input = zip(
     *savemode_data_loader.load_batch(
-        bands=bands, batch_size=1, is_testing=True
+        bands=["B04", "B03", "B02", "B08"], batch_size=BATCH_SIZE, is_testing=True
     )
 )
 
@@ -37,88 +40,61 @@ ground_truth = np.array([[d["data"] for d in inner_array] for inner_array in np.
 ground_truth = np.transpose(ground_truth, (0, 2, 3, 1))
 ground_truth = ((ground_truth + 1) / 2 * 255).astype(np.uint8)
 
-output = model.predict(input_pred)
-generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
-
 input_dict = {
     "s1_hv": {"title": "S1 HV", "desc": input[0][0]["im"].split("/")[-1], "image": input_pred[:, :, :, 0]},
     "s1_vv": {"title": "S1 VV", "desc": input[0][1]["im"].split("/")[-1], "image": input_pred[:, :, :, 1]},
 }
 
-for i in range(2, len(bands) + 2):
-    input_dict[f"s2_{bands[i - 2]}"] = {
-        "title": f"S2 {bands[i - 2]}",
+for i in range(2, len(["B04", "B03", "B02", "B08"]) + 2):
+    input_dict[f"s2_{['B04', 'B03', 'B02', 'B08'][i - 2]}"] = {
+        "title": f"S2 {['B04', 'B03', 'B02', 'B08'][i - 2]}",
         "desc": input[0][i]["im"].split("/")[-1],
         "image": (((input_pred[:, :, :, i] + 1) / 2) * 255).astype(np.uint8),
     }
 
-#####################################
-########     PLOT THE INPUT  ########
-#####################################
+rows = BATCH_SIZE
+cols = 3 + len(models_bands)  # For cloudy_input, ground_truth and each model output
+fig, axes = plt.subplots(rows, cols, figsize=(16 * cols, 8 * rows))  # Adjust the figure size accordingly
 
-for idx_img in range(1):
-    num_images = len(bands) + 2
-    num_rows = (num_images + 3) // 4
+for image_idx in range(BATCH_SIZE):
 
-    fig1, axes1 = plt.subplots(num_rows, 4, figsize=(16, 8))
-    fig1.suptitle("Input")
-
-    for i in range(num_rows):
-        for j in range(4):
-            idx = i * 4 + j
-            if idx < num_images:
-                ax = axes1[i, j] if num_rows > 1 else axes1[j]
-                if idx == 0:
-                    ax.imshow(input_dict["s1_hv"]["image"][idx_img])
-                    ax.set_title("_".join(input_dict["s1_hv"]["desc"].split("_")[:5]))
-                    ax.axis("off")
-                elif idx == 1:
-                    ax.imshow(input_dict["s1_vv"]["image"][idx_img])
-                    ax.set_title("_".join(input_dict["s1_vv"]["desc"].split("_")[:5]))
-                    ax.axis("off")
-                else:
-                    band = bands[idx - 2]
-                    ax.imshow(input_dict[f"s2_{band}"]["image"][idx_img])
-                    ax.set_title("_".join(input_dict[f"s2_{band}"]["desc"].split("_")[:5]))
-                    ax.axis("off")
-            else:
-                (axes1[i, j] if num_rows > 1 else axes1[j]).axis("off")
-
-    fig1.savefig(f"vis/input.png")
-
-    with open(f"vis/input.txt", "w") as f:
-        f.write(input_dict["s1_hv"]["desc"].split(".")[0] + "\n")
-        f.write(input_dict["s1_vv"]["desc"].split(".")[0] + "\n")
-        f.write(input_dict[f"s2_B02"]["desc"].split(".")[0] + "\n")
-
-    #####################################
-    ########     PLOT THE OUTPUT ########
-    #####################################
-
-    fig2, axes2 = plt.subplots(1, 3, figsize=(16, 8))
+    # Create the figure and axes array
 
     cloudy_input = np.stack(
         (
-            input_dict[f"s2_B04"]["image"][idx_img],
-            input_dict[f"s2_B03"]["image"][idx_img],
-            input_dict[f"s2_B02"]["image"][idx_img],
+            input_dict[f"s2_B04"]["image"][image_idx],
+            input_dict[f"s2_B03"]["image"][image_idx],
+            input_dict[f"s2_B02"]["image"][image_idx],
         ),
         axis=-1,
     )
+    # Display cloudy_input
+    axes[image_idx, 0].imshow(cloudy_input)
+    axes[image_idx, 0].set_title(f"Sentinel-2 Cloudy Input")
+    axes[image_idx, 0].axis("off")
 
-    axes2[0].imshow(cloudy_input)
-    axes2[0].set_title(f"Sentinel-2 Cloudy Input")
-    axes2[0].axis("off")
+    # Display ground_truth
+    axes[image_idx, 1].imshow(ground_truth[image_idx])
+    axes[image_idx, 1].set_title(f"Ground Truth")
+    axes[image_idx, 1].axis("off")
 
-    axes2[1].imshow(generated_image[idx_img])
-    axes2[1].set_title(f"Generated Output")
-    axes2[1].axis("off")
+    # Display model outputs
 
-    axes2[2].imshow(ground_truth[idx_img])
-    axes2[2].set_title(f"Ground Truth")
-    axes2[2].axis("off")
+    for j, (model, bands, filename) in enumerate(models_bands):
+        print(f"MODEL: {model}", len(bands)+2, input_pred.shape)
+        model = load_model(model)
+        input_to_show = input_pred[:,:,:,:len(bands)+2]
 
-    plt.tight_layout()
+        output = model.predict(input_to_show)
+        generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 
-    fig2.savefig(f"vis/output.png")
-    plt.close()
+        axes[image_idx, j + 2].imshow(generated_image[image_idx])
+        axes[image_idx, j + 2].set_title(f"Model {j+1} Output")
+        axes[image_idx, j + 2].axis("off")
+
+plt.tight_layout()
+fig.savefig(f"vis/batch_output.png")  # Save the composite figure
+plt.close()
+
+
+

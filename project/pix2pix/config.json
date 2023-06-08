@@ -1,10 +1,10 @@
 {
     "epochs": 500,
-    "lr": 0.001,
+    "lr": 0.0001,
     "gf": 64,
     "df": 64,
-    "batch_size": 1,
+    "batch_size": 20,
     "bands": ["B04", "B03", "B02", "B08"],
-    "nb_batches_per_epoch": 100,
+    "nb_batches_per_epoch": 10,
     "model_path": ""
 }
