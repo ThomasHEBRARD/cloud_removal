@@ -53,7 +53,7 @@ for i in range(2, len(["B04", "B03", "B02", "B08"]) + 2):
     }
 
 rows = BATCH_SIZE
-cols = 3 + len(models_bands)  # For cloudy_input, ground_truth and each model output
+cols = 2 + len(models_bands)  # For cloudy_input, ground_truth and each model output
 fig, axes = plt.subplots(rows, cols, figsize=(16 * cols, 8 * rows))  # Adjust the figure size accordingly
 
 for image_idx in range(BATCH_SIZE):
@@ -93,8 +93,5 @@ for image_idx in range(BATCH_SIZE):
         axes[image_idx, j + 2].axis("off")
 
 plt.tight_layout()
-fig.savefig(f"vis/batch_output.png")  # Save the composite figure
+fig.savefig(f"vis/visualisation.png")  # Save the composite figure
 plt.close()
-
-
-
