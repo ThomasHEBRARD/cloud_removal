@@ -24,7 +24,7 @@ with open("config.json", "r") as file:
 
 RUN_NAME = ','.join(f'{k}={v}' for k, v in config.items())
 
-OVERRIDE = True
+OVERRIDE = False
 
 if not os.path.exists(f"models/{RUN_NAME}"):
     os.makedirs(f"models/{RUN_NAME}")
@@ -156,6 +156,19 @@ class LossHistory(Callback):
         with open(f"models/{RUN_NAME}/loss_log.txt", "a") as f:
             f.write('{},{},{},{},{}\n'.format(epoch, logs.get('loss'), logs.get('val_loss'), logs.get('accuracy'), logs.get('val_accuracy')))
 
+
+def data_generator(batch_size):
+    while True:
+        data_loader = DataLoader()
+        y_batch, x_batch = zip( 
+            *data_loader.load_batch(
+                bands=BANDS, batch_size=batch_size
+            )
+        )
+        x_batch, y_batch = np.array(x_batch), np.array(y_batch)
+        yield (x_batch, y_batch)
+
+
 # Initialize the callback
 history = LossHistory()
 
@@ -172,4 +185,4 @@ callback = ImageCallback(imgs_B, imgs_A, f"models/{RUN_NAME}")
 
 val_A, val_B = imgs_A[:10,:,: ,:], imgs_B[:10,:,:,:]
 
-model.fit(imgs_B, imgs_A, steps_per_epoch=config["nb_batches_per_epoch"], epochs=total_epochs, callbacks=[checkpoint, callback, history], validation_data=(val_B, val_A))
+model.fit(data_generator(config["batch_size"]), steps_per_epoch=int(config["nb_batches_per_epoch"]/config["batch_size"]), epochs=total_epochs, callbacks=[checkpoint, callback, history], validation_data=(val_B, val_A))

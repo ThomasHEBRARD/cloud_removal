@@ -38,7 +38,6 @@ class DataLoader:
         os.chdir("/Users/thomashebrard/thesis/code/preprocess/")
         i = 0
         for k in data_keys:
-            print(i)
             i+=1
             s1_hv = gdal.Open(dataset[k]["s1_hv"]).ReadAsArray()
             s1_vv = gdal.Open(dataset[k]["s1_vv"]).ReadAsArray()
