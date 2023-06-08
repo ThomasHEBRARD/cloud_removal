@@ -3,6 +3,7 @@ import json
 import datetime
 import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 from keras.layers import Input, Dropout, Concatenate
 from keras.layers import BatchNormalization
@@ -291,6 +292,9 @@ class Pix2Pix:
         ground_truth = ((ground_truth + 1) / 2 * 255).astype(np.uint8)
 
         output = self.generator.predict(input_pred)
+        # real_decision = self.discriminator([input_pred, ground_truth], training=False)
+        # loss_fn = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
         generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 
         input_dict = {

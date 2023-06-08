@@ -50,12 +50,11 @@ for i in range(2, len(["B04", "B03", "B02", "B08"]) + 2):
         "image": (((input_pred[:, :, :, i] + 1) / 2) * 255).astype(np.uint8),
     }
 
-
 ########################################################
 ########                  PLOT                  ########
 ########################################################
 rows = BATCH_SIZE
-cols = 2 + len(models_bands)  # For cloudy_input, ground_truth and each model output
+cols = 3 + len(models_bands)  # For cloudy_input, ground_truth and each model output
 # fig, axes = plt.subplots(rows, cols, figsize=(16 * cols, 8 * rows))  # Adjust the figure size accordingly
 
 # for image_idx in range(BATCH_SIZE):
@@ -119,7 +118,20 @@ for image_idx in range(BATCH_SIZE):
         ),
         axis=-1,
     )
+
+    def normalize_image(image):
+        return (image - np.min(image)) / (np.max(image) - np.min(image)) * 255
+
+    s1 = normalize_image(input_dict["s1_hv"]["image"][image_idx])
+
+    # Convert to PIL Image and resize to match the other images
+    gray_image_pil = Image.fromarray(s1.astype(np.uint8)).resize((image_width, image_height), Image.ANTIALIAS)
+
+    # Convert to RGB
+    gray_image_rgb = gray_image_pil.convert("RGB")
+
     row_images.append(Image.fromarray((cloudy_input).astype(np.uint8)))
+    row_images.append(Image.fromarray(s1).convert("RGB"))
 
     # Add the ground truth
     row_images.append(Image.fromarray((ground_truth[image_idx]).astype(np.uint8)))
@@ -149,4 +161,4 @@ for idx, img in enumerate(all_images):
     final_image.paste(img, (0, (image_height + separator_size) * idx))
 
 # Save the final stitched image
-final_image.save("vis/final_image.png")
+final_image.save("vis/final_image2.png")
