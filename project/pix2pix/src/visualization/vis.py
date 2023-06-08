@@ -12,9 +12,7 @@ from src.dataset.make_dataset import DataLoader
 
 epoch = 190
 start = "epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path="
-# model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 model = load_model(f"/Users/thomashebrard/thesis/code/project/cnn/m/model-100.h5")
-# model = load_model(f"models/{start}/model_epoch_{epoch}/model_epoch_{epoch}.h5")
 
 models_bands = [
     (f"/Users/thomashebrard/thesis/code/project/cnn/m/model-100.h5", ["B04", "B03", "B02", "B08"], "unet"),
@@ -23,7 +21,7 @@ models_bands = [
 ]
 
 ################################
-BATCH_SIZE = 3
+BATCH_SIZE = 10
 savemode_data_loader = DataLoader()
 ground_truth, input = zip(
     *savemode_data_loader.load_batch(
