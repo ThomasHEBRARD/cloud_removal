@@ -274,7 +274,7 @@ class Pix2Pix:
                     config = json.load(conf)
                     json.dump(config, f)
 
-        savemode_data_loader = DataLoader(path="S2_32VNH_20200504_B12_929_566540_6243680_256")
+        savemode_data_loader = DataLoader(path="S2_32VNH_20210404_B02_17_543500_6297440_256")
 
         ground_truth, input = zip(
             *savemode_data_loader.load_batch(
@@ -292,8 +292,6 @@ class Pix2Pix:
         ground_truth = ((ground_truth + 1) / 2 * 255).astype(np.uint8)
 
         output = self.generator.predict(input_pred)
-        # real_decision = self.discriminator([input_pred, ground_truth], training=False)
-        # loss_fn = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
         generated_image = ((output + 1) / 2 * 255).astype(np.uint8)
 

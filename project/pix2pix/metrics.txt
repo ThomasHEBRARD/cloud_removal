@@ -1,0 +1,10 @@
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012296018190681934, RMSE: 0.01414631144134042, SSIM: 0.46682557463645935, PSNR: 36.98713551872531 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012311830185353756, RMSE: 0.01416240152283369, SSIM: 0.46511659026145935, PSNR: 36.97726204401452 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012081955559551716, RMSE: 0.013914928582047568, SSIM: 0.47436070442199707, PSNR: 37.13037991688737 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013995546847581863, RMSE: 0.01542185012059659, SSIM: 0.3902629315853119, PSNR: 36.23727059034072 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.010281029157340527, RMSE: 0.0117139533279451, SSIM: 0.5341262221336365, PSNR: 38.625929997037886 

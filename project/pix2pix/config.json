@@ -6,5 +6,6 @@
     "batch_size": 20,
     "bands": ["B04", "B03", "B02", "B08"],
     "nb_batches_per_epoch": 10,
-    "model_path": ""
+    "model_path": "",
+    "v": "cloudy"
 }

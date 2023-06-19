@@ -30,9 +30,10 @@ ax2.set_ylabel('d_loss', color='red')
 ax2.tick_params('y', colors='red')
 
 # Set the x-axis label
-ax1.set_xlabel('ID')
+ax1.set_xlabel('epoch')
 
-plt.title('ID vs Value for both DataFrames')
+plt.title('Generator loss and Discriminator loss of GAN')
+plt.savefig("loss.png")
 fig.tight_layout()
 
 plt.show()

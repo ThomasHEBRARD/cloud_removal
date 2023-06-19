@@ -23,15 +23,18 @@ with open("config.json", "r") as file:
     config = json.load(file)
 
 RUN_NAME = ','.join(f'{k}={v}' for k, v in config.items())
+SAVED_MODEL_PATH = f"models/{RUN_NAME}/model-100.h5"
+RUN_NAME = "continue_" + RUN_NAME
 
-OVERRIDE = False
+# OVERRIDE = False
 
-if not os.path.exists(f"models/{RUN_NAME}"):
-    os.makedirs(f"models/{RUN_NAME}")
-else:
-    if not OVERRIDE:
-        print("RUN ALREADY DONE")
-        sys.exit()
+# if not os.path.exists(f"models/{RUN_NAME}"):
+#     os.makedirs(f"models/{RUN_NAME}")
+# else:
+#     if not OVERRIDE:
+#         print("RUN ALREADY DONE")
+#         sys.exit()
+
 
 
 def build_unet(input_channel):
@@ -103,8 +106,16 @@ save_every_epochs = total_epochs // 20  # Integer division
 ##############################################################################################
 ##############################################################################################
 
-model = build_unet(input_channel=6)
-# Compile the model
+# Check if the saved model exists
+from keras.models import load_model
+
+if os.path.exists(SAVED_MODEL_PATH):
+    print("Loading model...")
+    model = load_model(SAVED_MODEL_PATH)  # Load the model
+else:
+    print("Building new model...")
+    model = build_unet(input_channel=6)  # Build the model from scratch
+
 model.compile(optimizer=Adam(config["lr"], 0.5), loss=config["loss"], metrics=['accuracy'])
 
 checkpoint = ModelCheckpoint(f'models/{RUN_NAME}/'+'model-{epoch:03d}.h5', period=save_every_epochs)
