@@ -14,13 +14,13 @@ plt.figure(figsize=(12, 6))
 
 # Plot training loss and validation loss
 plt.subplot(1, 1, 1)
-# plt.plot(df['loss'], label='Training Loss')
-# plt.plot(df['validation_loss'], label='Validation Loss')
-# plt.title('Training and Validation Loss')
-# plt.xlabel('Epochs')
-# plt.ylabel('Loss')
-# plt.legend()
-# plt.savefig("valcnn.png")
+plt.plot(df['loss'], label='Training Loss')
+plt.plot(df['validation_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.savefig("valcnn.png")
 
 # Plot training accuracy and validation accuracy
 plt.subplot(1, 1, 1)

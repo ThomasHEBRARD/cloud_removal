@@ -8,3 +8,151 @@ MAE: 0.012081955559551716, RMSE: 0.013914928582047568, SSIM: 0.47436070442199707
 MAE: 0.013995546847581863, RMSE: 0.01542185012059659, SSIM: 0.3902629315853119, PSNR: 36.23727059034072 
 /Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
 MAE: 0.010281029157340527, RMSE: 0.0117139533279451, SSIM: 0.5341262221336365, PSNR: 38.625929997037886 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.008532716892659664, RMSE: 0.009792359830940175, SSIM: 0.6163878440856934, PSNR: 40.18225250413148 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.011547754518687725, RMSE: 0.013138805910462827, SSIM: 0.4812985956668854, PSNR: 37.62888186500908 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.030630996450781822, RMSE: 0.043145173835631725, SSIM: 0.397042840719223, PSNR: 27.301348666321267 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.010506379418075085, RMSE: 0.011864886578026809, SSIM: 0.5252436995506287, PSNR: 38.51472819546885 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.03307155892252922, RMSE: 0.04380842053850671, SSIM: 0.2978935241699219, PSNR: 27.16884110888057 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.009856496937572956, RMSE: 0.01113587364035389, SSIM: 0.5442757606506348, PSNR: 39.065513993241936 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.010883484035730362, RMSE: 0.013082413479125235, SSIM: 0.5376579165458679, PSNR: 37.6662426727283 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.032517898827791214, RMSE: 0.04351457391878604, SSIM: 0.30578842759132385, PSNR: 27.227298441316236 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013458073139190674, RMSE: 0.015220685590715318, SSIM: 0.4245375692844391, PSNR: 36.35131527775051 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012221071869134903, RMSE: 0.013798531470379977, SSIM: 0.46103712916374207, PSNR: 37.20334233660868 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.015820229426026344, RMSE: 0.01890245276831769, SSIM: 0.3919403553009033, PSNR: 34.46963635470549 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.01224391907453537, RMSE: 0.013670061195493117, SSIM: 0.46125391125679016, PSNR: 37.28459060740866 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.016069935634732246, RMSE: 0.017610725828333656, SSIM: 0.3243647515773773, PSNR: 35.08445473160785 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012623176909983158, RMSE: 0.014268309994150857, SSIM: 0.4479239284992218, PSNR: 36.91254914171178 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.011417440138757229, RMSE: 0.012666347707212726, SSIM: 0.4767431914806366, PSNR: 37.94697194360235 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.010762316174805164, RMSE: 0.012309308735883867, SSIM: 0.5159774422645569, PSNR: 38.19532673127827 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.011582043953239918, RMSE: 0.013195167975378163, SSIM: 0.4852398931980133, PSNR: 37.59170119417633 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.008689831010997295, RMSE: 0.009966530483109718, SSIM: 0.6057558655738831, PSNR: 40.02911987200885 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.010367981158196926, RMSE: 0.011698091198680585, SSIM: 0.5230359435081482, PSNR: 38.63770016879849 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012689190916717052, RMSE: 0.014599872091570517, SSIM: 0.4546395540237427, PSNR: 36.71301899288422 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.010162710212171078, RMSE: 0.012019879851300794, SSIM: 0.5566083788871765, PSNR: 38.40199724363246 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.014419607818126678, RMSE: 0.01648419542661141, SSIM: 0.38999757170677185, PSNR: 35.65864517393991 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012684918940067291, RMSE: 0.015007738038968776, SSIM: 0.4691392481327057, PSNR: 36.47369547040122 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012491588480770588, RMSE: 0.013727169956472482, SSIM: 0.43563714623451233, PSNR: 37.24838003816715 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012103932909667492, RMSE: 0.013791997738298017, SSIM: 0.4676312506198883, PSNR: 37.207456707976434 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013276033103466034, RMSE: 0.014504127146823571, SSIM: 0.4094524681568146, PSNR: 36.770167962622494 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.009603234939277172, RMSE: 0.010990860785482719, SSIM: 0.5672662258148193, PSNR: 39.17936564250775 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.011900185607373714, RMSE: 0.014033239502451502, SSIM: 0.4907921254634857, PSNR: 37.05684074104517 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.014534355141222477, RMSE: 0.016598276030390144, SSIM: 0.39809486269950867, PSNR: 35.59874018141591 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012600387446582317, RMSE: 0.014484955056640924, SSIM: 0.45204922556877136, PSNR: 36.78165702756401 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013667439110577106, RMSE: 0.016122413525482823, SSIM: 0.440264493227005, PSNR: 35.851398623261176 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013314761221408844, RMSE: 0.01418061053408672, SSIM: 0.3928429186344147, PSNR: 36.96610103063422 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.010439877398312092, RMSE: 0.011939177926452191, SSIM: 0.532751739025116, PSNR: 38.46051140306544 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01001330278813839, RMSE: 0.012282569933115899, SSIM: 0.5764732360839844, PSNR: 38.21421488154519 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012442720122635365, RMSE: 0.014422798801206543, SSIM: 0.4717378616333008, PSNR: 36.81900873600372 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.011495501734316349, RMSE: 0.013069486307587311, SSIM: 0.4893873631954193, PSNR: 37.6748299057448 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013735373504459858, RMSE: 0.01583884814181454, SSIM: 0.426692396402359, PSNR: 36.005527930714734 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01366396714001894, RMSE: 0.01552102017143514, SSIM: 0.4241354465484619, PSNR: 36.181594816551055 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013521412387490273, RMSE: 0.015234753752242853, SSIM: 0.4207693636417389, PSNR: 36.343291250490914 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.015022771432995796, RMSE: 0.0166414453229839, SSIM: 0.365360289812088, PSNR: 35.576179460165235 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01290698628872633, RMSE: 0.014461692923705206, SSIM: 0.4340488314628601, PSNR: 36.79561721865704 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01181416492909193, RMSE: 0.013985546936378983, SSIM: 0.494904488325119, PSNR: 37.086410957366766 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01139145065099001, RMSE: 0.01286763716253909, SSIM: 0.48546504974365234, PSNR: 37.81002412551163 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.011160017922520638, RMSE: 0.012393081953900834, SSIM: 0.4938886761665344, PSNR: 38.13641338341401 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013786009512841702, RMSE: 0.016819487781168152, SSIM: 0.4533907473087311, PSNR: 35.48374477550736 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013403075747191906, RMSE: 0.015147983201248282, SSIM: 0.4255960285663605, PSNR: 36.392903690854716 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01627296581864357, RMSE: 0.01749668028915699, SSIM: 0.32094764709472656, PSNR: 35.14088686615211 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.01536315493285656, RMSE: 0.016522270769045905, SSIM: 0.33351728320121765, PSNR: 35.63860533121768 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.017362356185913086, RMSE: 0.01930638825541534, SSIM: 0.3158358037471771, PSNR: 34.285979197174406 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012883513234555721, RMSE: 0.0144702987353096, SSIM: 0.44261565804481506, PSNR: 36.79045028235442 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.00962376780807972, RMSE: 0.011917696705357366, SSIM: 0.5849294066429138, PSNR: 38.47615366997867 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.00737615255638957, RMSE: 0.0079778622722481, SSIM: 0.6626407504081726, PSNR: 41.96226880790832 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.010712915100157261, RMSE: 0.011887880214394481, SSIM: 0.5029345154762268, PSNR: 38.497911488898595 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.011828998103737831, RMSE: 0.013109744269230682, SSIM: 0.46240416169166565, PSNR: 37.64811553013453 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.012499258853495121, RMSE: 0.014427955138877598, SSIM: 0.46042630076408386, PSNR: 36.81590457771285 
+/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5
+MAE: 0.013583175837993622, RMSE: 0.014825297638052699, SSIM: 0.40252020955085754, PSNR: 36.57993195703176 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.013253842480480671, RMSE: 0.015147124835848784, SSIM: 0.434110552072525, PSNR: 36.393395680974535 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.011921663768589497, RMSE: 0.013250701145186164, SSIM: 0.46174874901771545, PSNR: 37.55522239869649 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.0123384865000844, RMSE: 0.014025943625643609, SSIM: 0.4599328935146332, PSNR: 37.06135831188338 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.010589848272502422, RMSE: 0.011966460897024593, SSIM: 0.5155501961708069, PSNR: 38.44068518938007 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.01432077307254076, RMSE: 0.01582777978837434, SSIM: 0.3863929510116577, PSNR: 36.01160023443753 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.011625072918832302, RMSE: 0.013338186497429384, SSIM: 0.48769843578338623, PSNR: 37.498064505620185 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012500607408583164, RMSE: 0.014093326124941455, SSIM: 0.45795437693595886, PSNR: 37.019730092075285 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.01132296770811081, RMSE: 0.013023649658662996, SSIM: 0.48967161774635315, PSNR: 37.70534577021326 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.030111977830529213, RMSE: 0.042885861590441915, SSIM: 0.41071438789367676, PSNR: 27.353710384314493 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012047057040035725, RMSE: 0.0137957048559848, SSIM: 0.46954968571662903, PSNR: 37.2051221869666 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.01336604356765747, RMSE: 0.015496359112324333, SSIM: 0.4393523633480072, PSNR: 36.19540674855517 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.03153081610798836, RMSE: 0.04324973819898394, SSIM: 0.3424392640590668, PSNR: 27.280323079330586 
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.011182896792888641, RMSE: 0.01302124658564592, SSIM: 0.5010166764259338, PSNR: 37.70694909147196 
+-------
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.010372159071266651, RMSE: 0.01185855999081572, SSIM: 0.5350511074066162, PSNR: 38.51936112591036 
+/Users/thomashebrard/thesis/code/project/pix2pix/models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=,v=cloudy/model_epoch_175/model_epoch_175.h5,v=cloudy/model_epoch_250/model_epoch_250.h5
+MAE: 0.012896616011857986, RMSE: 0.014991193862582516, SSIM: 0.45352235436439514, PSNR: 36.483275076904604 
+––––––
+models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_475/model_epoch_475.h5
+MAE: 0.012731378898024559, RMSE: 0.01475681357782475, SSIM: 0.45504871010780334, PSNR: 36.620147615130854 
+/Users/thomashebrard/thesis/code/project/pix2pix/models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=,v=cloudy/model_epoch_175/model_epoch_175.h5,v=cloudy/model_epoch_250/model_epoch_250.h5
+MAE: 0.012520740740001202, RMSE: 0.01435705242293332, SSIM: 0.4567100405693054, PSNR: 36.85869411863899 

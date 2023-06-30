@@ -118,7 +118,7 @@ else:
 
 model.compile(optimizer=Adam(config["lr"], 0.5), loss=config["loss"], metrics=['accuracy'])
 
-checkpoint = ModelCheckpoint(f'models/{RUN_NAME}/'+'model-{epoch:03d}.h5', period=save_every_epochs)
+checkpoint = ModelCheckpoint(f'models/{RUN_NAME}/'+'model-{epoch:03d}.h5', period=save_every_epochs, save_best_only=True)
 
 class ImageCallback(Callback):
     def __init__(self, input_images, ground_truth_images, output_dir):

@@ -48,8 +48,8 @@ class Pix2Pix:
         self.img_cols = 256
         # self.input_channels_generator = len(bands) + 6
         self.input_channels_generator = len(bands) + 2
-        self.input_channels_discriminator = 3
-        self.output_channels = 3
+        self.input_channels_discriminator = len(bands)
+        self.output_channels = len(bands)
 
         # Calculate output shape of D (PatchGAN)
         patch = int(self.img_rows / 2**4)
@@ -189,7 +189,7 @@ class Pix2Pix:
         start_time = datetime.datetime.now()
         if model_path:
             from keras.models import load_model
-            self.generator = load_model(model_path)
+            self.generator = load_model(f"/Users/thomashebrard/thesis/code/project/pix2pix/models/{model_path}")
             self.generator.compile(loss=["mse", "mae"], loss_weights=[1, 100], optimizer=Adam(self.lr, 0.5)) 
 
         # Adversarial loss ground truths
@@ -199,11 +199,15 @@ class Pix2Pix:
         for epoch in range(epochs):
             self.data_loader = DataLoader()
             for batch_i in range(1, nb_batches_per_epoch + 1):
-                imgs_A, imgs_B = zip(
-                    *self.data_loader.load_batch(
-                        bands=self.bands, batch_size=batch_size
-                    )
-                )
+                imgs, vals = self.data_loader.load_batch(bands=self.bands, batch_size=batch_size, val=True)
+
+                imgs_A, imgs_B = zip(*imgs)
+                val_A, val_B = zip(*vals)
+
+                val_B = np.array([[d["data"] for d in inner_array] for inner_array in np.array(val_B)])
+                val_B = np.transpose(val_B, (0, 2, 3, 1))
+                val_A = np.array([[d["data"] for d in inner_array] for inner_array in np.array(val_A)])
+                val_A = np.transpose(val_A, (0, 2, 3, 1))
 
                 imgs_B = np.array([[d["data"] for d in inner_array] for inner_array in np.array(imgs_B)])
                 imgs_B = np.transpose(imgs_B, (0, 2, 3, 1))
@@ -227,6 +231,9 @@ class Pix2Pix:
 
                 # Train the generators
                 g_loss = self.combined.train_on_batch([imgs_A, imgs_B], [valid, imgs_A])
+                val_loss = self.combined.evaluate([val_A, val_B], [valid, val_A], batch_size=batch_size)
+                with open(f"models/{RUN_NAME}/val_loss.txt", "a") as f:
+                    f.write(str(epoch) + "," + str(val_loss) + "\n")
 
                 elapsed_time = datetime.datetime.now() - start_time
                 # Plot the progress
@@ -250,7 +257,7 @@ class Pix2Pix:
                 g_loss=g_loss[0],
                 accuracy=100 * d_loss[1],
                 start_time=start_time,
-                save=epoch % (epochs // 20) == 0,
+                save=epoch % (epochs // 100) == 0,
             )
 
     def save_model(self, epoch, d_loss, g_loss, accuracy, start_time, save=False):

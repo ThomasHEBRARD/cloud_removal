@@ -11,17 +11,29 @@ import tensorflow as tf
 from src.training.models import Pix2Pix
 from src.dataset.make_dataset import DataLoader
 
-epoch = 190
-start = "epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path="
-model = load_model(f"/Users/thomashebrard/thesis/code/project/cnn/m/model-100.h5")
+# epoch = 190
+# start = "epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path="
+# model = load_model(f"/Users/thomashebrard/thesis/code/project/cnn/m/model-100.h5")
 
 models_bands = [
-    (f"/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5", ["B04", "B03", "B02", "B08"], "unet"),
+    # (f"/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5", ["B04", "B03", "B02", "B08"], "unet"),
+    # (f"/Users/thomashebrard/thesis/code/project/pix2pix/models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=,v=cloudy/model_epoch_175/model_epoch_175.h5,v=cloudy/model_epoch_250/model_epoch_250.h5", ["B04", "B03", "B02", "B08"], "gan"),
+    # (f"/Users/thomashebrard/thesis/code/project/cnn/models/epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-010.h5", ["B04", "B03", "B02", "B08"], "unet"),
+    # (f"models/run_2023-06-01T15:26:55/model_epoch_60/model_epoch_60.h5", ["B04", "B03", "B02", "B08"], "gan"),
+    # (f"models/DO_NOT_DELETE/model_epoch_{190}/model_epoch_{190}.h5", ["B04", "B03", "B02"], "first_gan"),
     (f"models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_{475}/model_epoch_{475}.h5", ["B04", "B03", "B02", "B08"], "gan"),
-    (f"models/DO_NOT_DELETE/model_epoch_{190}/model_epoch_{190}.h5", ["B04", "B03", "B02"], "first_gan")
+    # (f"models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_{275}/model_epoch_{275}.h5", ["B04", "B03", "B02", "B08"], "gan"),
 ]
 
-################################
+# models_bands = [
+#     # (f"/Users/thomashebrard/thesis/code/project/cnn/models/continue_epochs=500,lr=0.0001,batch_size=16,nb_batches_per_epoch=1000,model_path=,loss=mse/model-100.h5", ["B04", "B03", "B02", "B08"], "unet"),
+#     (f"models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=/model_epoch_{475}/model_epoch_{475}.h5", ["B04", "B03", "B02", "B08"], "gan"),
+#     (f"/Users/thomashebrard/thesis/code/project/pix2pix/models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=epochs=500,lr=0.0001,gf=64,df=64,batch_size=20,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=10,model_path=,v=cloudy/model_epoch_175/model_epoch_175.h5,v=cloudy/model_epoch_250/model_epoch_250.h5", ["B04", "B03", "B02", "B08"], "gan"),
+#     # (f"models/DO_NOT_DELETE/model_epoch_{190}/model_epoch_{190}.h5", ["B04", "B03", "B02"], "first_gan")
+# ]
+
+
+# ################################
 BATCH_SIZE = 3
 savemode_data_loader = DataLoader()
 ground_truth, input = zip(
@@ -51,9 +63,9 @@ for i in range(2, len(["B04", "B03", "B02", "B08"]) + 2):
         "image": (((input_pred[:, :, :, i] + 1) / 2) * 255).astype(np.uint8),
     }
 
-########################################################
-########                  PLOT                  ########
-########################################################
+# ########################################################
+# ########                  PLOT                  ########
+# ########################################################
 rows = BATCH_SIZE
 cols = 3 + len(models_bands)  # For cloudy_input, ground_truth and each model output
 DO = True
@@ -125,10 +137,10 @@ if DO:
     final_image.save("vis/final_image2.png")
 
 
-# ########################################################
-# ########                  METRIC                  ########
-# ########################################################
-DO = True
+# # ########################################################
+# # ########                  METRIC                  ########
+# # ########################################################
+DO = False
 if DO:
     from sklearn.metrics import mean_absolute_error, mean_squared_error
     from math import sqrt
@@ -182,8 +194,74 @@ if DO:
 
         return mae, rmse, ssim_avg, psnr_value
 
-    n = 0
+    n = 1
     model = load_model(models_bands[n][0])
     metric = compute_metrics(model, input_pred[:,:,:,:len(models_bands[n][1])+2], ground_truth)
     with open("metrics.txt", "a") as f:
         f.write(f"{models_bands[n][0]}\nMAE: {metric[0]}, RMSE: {metric[1]}, SSIM: {metric[2]}, PSNR: {metric[3]} \n")
+
+# model = load_model(f"/Users/thomashebrard/thesis/code/project/pix2pix/models/epochs=500,lr=0.0001,gf=64,df=64,batch_size=16,bands=['B04', 'B03', 'B02', 'B08'],nb_batches_per_epoch=8,model_path=/model_epoch_320/model_epoch_320.h5")
+
+# gen = model.predict(input_pred)
+# predicted_array = ((gen + 1) / 2 * 400).astype(np.uint8)
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# # Assuming you have two arrays: 'predicted_array' and 'ground_truth_array',
+# # both of shape (2, 256, 256, 4), representing the predicted and ground truth images respectively.
+
+# # Iterate over the pictures
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# # Assuming you have two arrays: 'predicted_array' and 'ground_truth_array',
+# # both of shape (2, 256, 256, 4), representing the predicted and ground truth images respectively.
+
+
+# for i in range(predicted_array.shape[0]):
+#     # Iterate over the channels
+#     for j in range(predicted_array.shape[3]):
+#         # Extract the predicted and ground truth channels for the current picture
+#         predicted_channel = ((predicted_array[i, :, :, j]+1)/2*250).astype(np.float32)
+#         ground_truth_channel = ground_truth[i, :, :, j]
+        
+#         # Plot the predicted channel
+#         plt.subplot(2, predicted_array.shape[3], i * predicted_array.shape[3] + j + 1)
+#         plt.imshow(predicted_channel)  # Assuming grayscale channels, change cmap if needed
+#         plt.axis('off')
+
+#         # Plot the ground truth channel
+#         plt.subplot(2, predicted_array.shape[3], (i+1) * predicted_array.shape[3] + j + 1)
+#         plt.imshow(ground_truth_channel)  # Assuming grayscale channels, change cmap if needed
+#         plt.axis('off')
+
+# plt.show()
+
+# B08_p = predicted_array[0,:,:,-1]
+# B04_p = predicted_array[0, :,:,0]
+# NDVI_p = (B08_p-B04_p)/(B08_p+B04_p)
+
+# B08 = ground_truth[0,:,:,-1]
+# B04 = ground_truth[0,:,:,0]
+# NDVI = ((B08-B04)/(B08+B04))
+
+# fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
+# axes[0].imshow(NDVI, cmap='RdYlGn')
+# axes[0].axis('off')
+# axes[0].set_title('NDVI')
+
+# # Plot the second image
+# axes[1].imshow(NDVI_p, cmap='RdYlGn')
+# axes[1].axis('off')
+# axes[1].set_title('NDVI-p')
+# plt.colorbar()
+
+# # Adjust the spacing between subplots
+# plt.tight_layout()
+
+# # Display the plot
+# plt.show()
